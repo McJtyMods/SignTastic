@@ -1,6 +1,6 @@
 package com.mcjty.signtastic;
 
-import com.mcjty.signtastic.modules.squares.SquaresModule;
+import com.mcjty.signtastic.modules.signs.SignsModule;
 import com.mcjty.signtastic.setup.ModSetup;
 import com.mcjty.signtastic.setup.Registration;
 import mcjty.lib.modules.Modules;
@@ -33,6 +33,6 @@ public class SignTastic {
     }
 
     private void setupModules() {
-        modules.register(new SquaresModule());
+        modules.register(new SignsModule());
     }
 }

@@ -1,7 +1,7 @@
 package com.mcjty.signtastic.datagen;
 
 import com.mcjty.signtastic.SignTastic;
-import com.mcjty.signtastic.modules.squares.SquaresModule;
+import com.mcjty.signtastic.modules.signs.SignsModule;
 import mcjty.lib.datagen.BaseBlockStateProvider;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.util.Direction;
@@ -20,14 +20,18 @@ public class BlockStates extends BaseBlockStateProvider {
 
     @Override
     protected void registerStatesAndModels() {
-        ModelFile screen = screenModel("square_sign", modLoc("block/screenframe_icon"));
-        orientedBlock(SquaresModule.SQUARE_SIGN.get(), screen);
+        ModelFile squareSign = screenModel("square_sign", modLoc("block/screenframe_icon"), 13);
+        orientedBlock(SignsModule.SQUARE_SIGN.get(), squareSign);
+        ModelFile blockSign = screenModel("block_sign", modLoc("block/screenframe_icon"), 0);
+        orientedBlock(SignsModule.BLOCK_SIGN.get(), blockSign);
+        ModelFile slabSign = screenModel("slab_sign", modLoc("block/screenframe_icon"), 8);
+        orientedBlock(SignsModule.SLAB_SIGN.get(), slabSign);
     }
 
-    public ModelFile screenModel(String modelName, ResourceLocation texture) {
+    public ModelFile screenModel(String modelName, ResourceLocation texture, int offset) {
         BlockModelBuilder model = models().getBuilder(BLOCK_FOLDER + "/" + modelName)
                 .parent(models().getExistingFile(mcLoc("block")));
-        model.element().from(0, 0, 13).to(16, 16, 16)
+        model.element().from(0, 0, offset).to(16, 16, 16)
                 .face(Direction.DOWN).cullface(Direction.DOWN).texture("#side").end()
                 .face(Direction.UP).cullface(Direction.UP).texture("#side").end()
                 .face(Direction.EAST).cullface(Direction.EAST).texture("#side").end()
@@ -35,7 +39,8 @@ public class BlockStates extends BaseBlockStateProvider {
                 .face(Direction.NORTH).texture("#front").end()
                 .face(Direction.SOUTH).cullface(Direction.SOUTH).texture("#side").end()
                 .end()
-                .texture("side", new ResourceLocation("signtastic", "block/side"))
+                .texture("side", new ResourceLocation("minecraft", "block/oak_planks"))
+                .texture("particle", new ResourceLocation("minecraft", "block/oak_planks"))
                 .texture("front", texture);
         return model;
     }

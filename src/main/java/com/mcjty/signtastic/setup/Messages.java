@@ -1,6 +1,7 @@
 package com.mcjty.signtastic.setup;
 
 import com.mcjty.signtastic.SignTastic;
+import com.mcjty.signtastic.modules.signs.network.PacketUpdateSignData;
 import mcjty.lib.network.PacketHandler;
 import mcjty.lib.network.PacketSendClientCommand;
 import mcjty.lib.network.PacketSendServerCommand;
@@ -32,7 +33,11 @@ public class Messages {
 
         INSTANCE = net;
 
-//        net.registerMessage(id(), PacketUpdateNBTShapeCard.class, PacketUpdateNBTShapeCard::toBytes, PacketUpdateNBTShapeCard::new, PacketUpdateNBTShapeCard::handle);
+        net.messageBuilder(PacketUpdateSignData.class, id())
+                .encoder(PacketUpdateSignData::toBytes)
+                .decoder(PacketUpdateSignData::new)
+                .consumer(PacketUpdateSignData::handle)
+                .add();
 
         PacketHandler.registerStandardMessages(id(), net);
     }

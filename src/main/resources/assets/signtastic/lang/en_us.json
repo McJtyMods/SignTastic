@@ -1,0 +1,13 @@
+{
+    "block.signtastic.square_sign": "Square sign",
+    "block.signtastic.block_sign": "Block sign",
+    "block.signtastic.slab_sign": "Slab sign",
+
+    "itemGroup.signtastic": "SignTastic",
+    "message.signtastic.shiftmessage": "<Press Shift>",
+
+    "message.signtastic.square_sign.header": "A square flat sign that can be heavily configured",
+    "message.signtastic.block_sign.header": "A block shaped sign that can be heavily configured",
+    "message.signtastic.slab_sign.header": "A slab shaped sign that can be heavily configured"
+}
+

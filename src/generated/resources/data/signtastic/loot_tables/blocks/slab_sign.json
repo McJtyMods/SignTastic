@@ -2,7 +2,7 @@
   "type": "minecraft:block",
   "pools": [
     {
-      "name": "square_sign",
+      "name": "slab_sign",
       "rolls": 1,
       "entries": [
         {
@@ -43,7 +43,7 @@
               ]
             }
           ],
-          "name": "signtastic:square_sign"
+          "name": "signtastic:slab_sign"
         }
       ]
     }

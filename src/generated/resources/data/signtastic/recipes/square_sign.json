@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ppp",
+    "pSp",
+    "ppp"
+  ],
+  "key": {
+    "S": {
+      "tag": "minecraft:signs"
+    },
+    "p": {
+      "item": "minecraft:paper"
+    }
+  },
+  "result": {
+    "item": "signtastic:square_sign"
+  }
+}

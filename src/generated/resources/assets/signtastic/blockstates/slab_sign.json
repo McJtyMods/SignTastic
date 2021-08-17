@@ -1,0 +1,27 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "signtastic:block/slab_sign",
+      "x": 90
+    },
+    "facing=up": {
+      "model": "signtastic:block/slab_sign",
+      "x": -90
+    },
+    "facing=north": {
+      "model": "signtastic:block/slab_sign"
+    },
+    "facing=south": {
+      "model": "signtastic:block/slab_sign",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "signtastic:block/slab_sign",
+      "y": 270
+    },
+    "facing=east": {
+      "model": "signtastic:block/slab_sign",
+      "y": 90
+    }
+  }
+}
