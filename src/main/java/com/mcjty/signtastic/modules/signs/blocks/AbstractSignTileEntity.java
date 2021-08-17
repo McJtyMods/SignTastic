@@ -41,6 +41,10 @@ public abstract class AbstractSignTileEntity extends GenericTileEntity {
     private boolean bright = false;         // True if the screen contents is full bright
     private TextureType type = TextureType.OAK;
 
+    public static final int SIZE_NORMAL = 0;
+    public static final int SIZE_LARGE = 1;
+    public static final int SIZE_HUGE = 2;
+
     private List<String> lines = new ArrayList<>();
 
     public static final Lazy<ContainerFactory> CONTAINER_FACTORY = Lazy.of(EmptyContainerFactory::new);

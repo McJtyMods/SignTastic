@@ -1,5 +1,6 @@
 package com.mcjty.signtastic.modules.signs;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.HashMap;
