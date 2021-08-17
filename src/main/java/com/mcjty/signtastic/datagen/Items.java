@@ -1,6 +1,7 @@
 package com.mcjty.signtastic.datagen;
 
 import com.mcjty.signtastic.SignTastic;
+import com.mcjty.signtastic.modules.squares.SquaresModule;
 import mcjty.lib.datagen.BaseItemModelProvider;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.common.data.ExistingFileHelper;
@@ -13,7 +14,7 @@ public class Items extends BaseItemModelProvider {
 
     @Override
     protected void registerModels() {
-//        parentedBlock(CrafterModule.CRAFTER1.get(), "block/crafter1");
+        parentedBlock(SquaresModule.SQUARE_SIGN.get(), "block/square_sign");
     }
 
     @Override

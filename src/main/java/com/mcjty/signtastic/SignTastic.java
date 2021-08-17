@@ -1,22 +1,38 @@
 package com.mcjty.signtastic;
 
+import com.mcjty.signtastic.modules.squares.SquaresModule;
+import com.mcjty.signtastic.setup.ModSetup;
+import com.mcjty.signtastic.setup.Registration;
+import mcjty.lib.modules.Modules;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 @Mod(SignTastic.MODID)
 public class SignTastic {
 
     public static final String MODID = "signtastic";
 
-    public static final Logger LOGGER = LogManager.getLogger();
+    @SuppressWarnings("PublicField")
+    public static ModSetup setup = new ModSetup();
+    private Modules modules = new Modules();
 
     public SignTastic() {
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(SignTastic::init);
+        setupModules();
+        Registration.register();
+
+        IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+        bus.addListener(setup::init);
+        bus.addListener(modules::init);
+
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+            bus.addListener(modules::initClient);
+        });
     }
 
-    public static void init(final FMLCommonSetupEvent event) {
+    private void setupModules() {
+        modules.register(new SquaresModule());
     }
 }

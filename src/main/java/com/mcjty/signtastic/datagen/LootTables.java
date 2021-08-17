@@ -1,5 +1,6 @@
 package com.mcjty.signtastic.datagen;
 
+import com.mcjty.signtastic.modules.squares.SquaresModule;
 import mcjty.lib.datagen.BaseLootTableProvider;
 import net.minecraft.data.DataGenerator;
 
@@ -11,7 +12,7 @@ public class LootTables extends BaseLootTableProvider {
 
     @Override
     protected void addTables() {
-//        addSimpleTable(LogicBlockModule.DIGIT.get());
+        addStandardTable(SquaresModule.SQUARE_SIGN.get());
     }
 
     @Override
