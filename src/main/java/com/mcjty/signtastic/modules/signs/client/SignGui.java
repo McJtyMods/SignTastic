@@ -31,6 +31,7 @@ public class SignGui extends GenericGuiContainer<AbstractSignTileEntity, Generic
     private ColorSelector textColorSelector;
     private ToggleButton fullBrightButton;
     private ToggleButton transparentButton;
+    private ToggleButton largeButton;
     private ChoiceLabel textureTypeLabel;
 
     public SignGui(AbstractSignTileEntity tileEntity, GenericContainer container, PlayerInventory inventory) {
@@ -65,6 +66,11 @@ public class SignGui extends GenericGuiContainer<AbstractSignTileEntity, Generic
                 .text("Txt")
                 .currentColor(tileEntity.getTextColor())
                 .event(s -> update());
+        textureTypeLabel = new ChoiceLabel()
+                .hint(135, HEIGHT-40, 70, 16)
+                .choices(Arrays.stream(TextureType.values()).sorted().map(s -> s.name().toLowerCase()).toArray(String[]::new))
+                .choice(tileEntity.getTextureType().name().toLowerCase())
+                .event(s -> update());
         fullBrightButton = new ToggleButton()
                 .hint(10, HEIGHT-20, 50, 16)
                 .text("Bright")
@@ -77,17 +83,18 @@ public class SignGui extends GenericGuiContainer<AbstractSignTileEntity, Generic
                 .checkMarker(true)
                 .pressed(tileEntity.isTransparent())
                 .event(this::update);
-        textureTypeLabel = new ChoiceLabel()
-                .hint(125, HEIGHT-20, 80, 16)
-                .choices(Arrays.stream(TextureType.values()).sorted().map(s -> s.name().toLowerCase()).toArray(String[]::new))
-                .choice(tileEntity.getTextureType().name().toLowerCase())
-                .event(s -> update());
+        largeButton = new ToggleButton()
+                .hint(125, HEIGHT-20, 50, 16)
+                .text("Large")
+                .checkMarker(true)
+                .pressed(tileEntity.isLarge())
+                .event(this::updateLarge);
 
         Panel toplevel = Widgets.positional()
                 .background(BACKGROUND)
                 .children(labels)
                 .children(backColorButton, backColorSelector, textColorSelector, fullBrightButton, transparentButton,
-                        textureTypeLabel);
+                        textureTypeLabel, largeButton);
         toplevel.bounds(leftPos, topPos, WIDTH, HEIGHT);
 
         window = new Window(this, toplevel);
@@ -95,6 +102,10 @@ public class SignGui extends GenericGuiContainer<AbstractSignTileEntity, Generic
     }
 
     private void updateFromTE() {
+        int linesSupported = tileEntity.getLinesSupported();
+        if (largeButton.isPressed()) {
+            linesSupported /= 2;
+        }
         List<String> lines = tileEntity.getLines();
         for (int i = 0 ; i < labels.length ; i++) {
             if (i < lines.size()) {
@@ -102,8 +113,13 @@ public class SignGui extends GenericGuiContainer<AbstractSignTileEntity, Generic
             } else {
                 labels[i].text("");
             }
-            labels[i].enabled(i < tileEntity.getLinesSupported());
+            labels[i].enabled(i < linesSupported);
         }
+    }
+
+    private void updateLarge() {
+        update();
+        updateFromTE();
     }
 
     private void update() {
@@ -111,6 +127,7 @@ public class SignGui extends GenericGuiContainer<AbstractSignTileEntity, Generic
                 Arrays.stream(labels).map(TextField::getText).collect(Collectors.toList()),
                 backColorButton.isPressed() ? backColorSelector.getCurrentColor() : null,
                 textColorSelector.getCurrentColor(), fullBrightButton.isPressed(), transparentButton.isPressed(),
+                largeButton.isPressed(),
                 TextureType.getByName(textureTypeLabel.getCurrentChoice())));
     }
 

@@ -76,29 +76,37 @@ public class SignRenderer extends TileEntityRenderer<AbstractSignTileEntity> {
         if (!tileEntity.isTransparent()) {
             renderScreenBoard(matrixStack, buffer, tileEntity.getTextureType(),
                     tileEntity.getRenderOffset(),
-                    tileEntity.getSize(),
-                    tileEntity.getBackColor(), packedLightIn, packedOverlayIn);
+                    tileEntity.getBackColor(), packedLightIn);
         }
 
         FontRenderer fontrenderer = Minecraft.getInstance().font;
-        renderText(matrixStack, buffer, fontrenderer, tileEntity, tileEntity.getSize(), packedLightIn);
+        renderText(matrixStack, buffer, fontrenderer, tileEntity, tileEntity.isLarge(), packedLightIn);
 
         matrixStack.popPose();
     }
 
-    private static void renderText(MatrixStack matrixStack, IRenderTypeBuffer buffer, FontRenderer fontrenderer, AbstractSignTileEntity tileEntity, int size, int lightmapValue) {
-        float factor = size + 1.0f;
-        int currenty = 9;
+    private static void renderText(MatrixStack matrixStack, IRenderTypeBuffer buffer, FontRenderer fontrenderer, AbstractSignTileEntity tileEntity, boolean large, int lightmapValue) {
+        float factor = 2.0f + (large ? 2 : 0);
+        int currenty = 9 - (large ? 4 : 0);
 
         float f = 0.005F;
 
         matrixStack.pushPose();
         matrixStack.translate(-0.5F, 0.5F, 0.02F + tileEntity.getRenderOffset());
         matrixStack.scale(f * factor, -1.0f * f * factor, f);
+        int l = 0;
+        int linesSupported = tileEntity.getLinesSupported();
+        if (tileEntity.isLarge()) {
+            linesSupported /= 2;
+        }
         for (String line : tileEntity.getLines()) {
             fontrenderer.drawInBatch(line, 5, currenty, 0xff000000 | tileEntity.getTextColor(), false, matrixStack.last().pose(), buffer, false, 0,
                     tileEntity.isBright() ? 0xf000f0 : lightmapValue);
             currenty += 10;
+            l++;
+            if (l >= linesSupported) {
+                break;
+            }
         }
         matrixStack.popPose();
     }
@@ -106,7 +114,7 @@ public class SignRenderer extends TileEntityRenderer<AbstractSignTileEntity> {
 
     private static void renderScreenBoard(MatrixStack matrixStack, @Nullable IRenderTypeBuffer buffer,
                                           TextureType textureType, float renderOffset,
-                                          int size, Integer color, int packedLight, int packedOverlay) {
+                                          Integer color, int packedLight) {
         matrixStack.pushPose();
         matrixStack.scale(1, -1, -1);
 
@@ -116,66 +124,55 @@ public class SignRenderer extends TileEntityRenderer<AbstractSignTileEntity> {
                 textureType.getId()
         );
 
-
         IVertexBuilder builder = buffer.getBuffer(RenderType.solid());
 
-        float dim;
-        float s;
-//        if (size == AbstractSignTileEntity.SIZE_HUGE) {
-//            dim = 2.46f;
-//            s = 2;
-//        } else if (size == AbstractSignTileEntity.SIZE_LARGE) {
-//            dim = 1.46f;
-//            s = 1;
-//        } else {
-            dim = .46f;
-            s = 0;
-//        }
-
-
+        float dim = .46f;
         float zback = .05f;
-        float zfront = 0f - renderOffset;
+        float zfront = -renderOffset;
+        float ss = .5f;
 
-        float ss = .5f;//50;//.5f;
-
-        float su = (sprite.getU1()-sprite.getU0()) * (.1f+renderOffset);
-        float sv = (sprite.getV1()-sprite.getV0()) * (.1f+renderOffset);
+        float u0 = sprite.getU0();
+        float v0 = sprite.getV0();
+        float u1 = sprite.getU1();
+        float v1 = sprite.getV1();
+        float su = (u1 - u0) * (.1f+renderOffset);
+        float sv = (v1 - v0) * (.1f+renderOffset);
 
         // BACK
-        vt(builder, matrix, -ss, -ss, zback, sprite.getU0(), sprite.getV0(), packedLight);
-        vt(builder, matrix, ss + s, -ss, zback, sprite.getU1(), sprite.getV0(), packedLight);
-        vt(builder, matrix, ss + s, ss + s, zback, sprite.getU1(), sprite.getV1(), packedLight);
-        vt(builder, matrix, -ss, ss + s, zback, sprite.getU0(), sprite.getV1(), packedLight);
+        vt(builder, matrix, -ss, -ss, zback, u0, v0, packedLight);
+        vt(builder, matrix, ss, -ss, zback, u1, v0, packedLight);
+        vt(builder, matrix, ss, ss, zback, u1, v1, packedLight);
+        vt(builder, matrix, -ss, ss, zback, u0, v1, packedLight);
 
         // FRONT
-        vt(builder, matrix, -ss, ss + s, zfront, sprite.getU0(), sprite.getV0(), packedLight);
-        vt(builder, matrix, ss + s, ss + s, zfront, sprite.getU1(), sprite.getV0(), packedLight);
-        vt(builder, matrix, ss + s, -ss, zfront, sprite.getU1(), sprite.getV1(), packedLight);
-        vt(builder, matrix, -ss, -ss, zfront, sprite.getU0(), sprite.getV1(), packedLight);
+        vt(builder, matrix, -ss, ss, zfront, u0, v0, packedLight);
+        vt(builder, matrix, ss, ss, zfront, u1, v0, packedLight);
+        vt(builder, matrix, ss, -ss, zfront, u1, v1, packedLight);
+        vt(builder, matrix, -ss, -ss, zfront, u0, v1, packedLight);
 
         // DOWN
-        vt(builder, matrix, -ss, ss + s, zback, sprite.getU0(), sprite.getV0(), packedLight);
-        vt(builder, matrix, ss + s, ss + s, zback, sprite.getU1(), sprite.getV0(), packedLight);
-        vt(builder, matrix, ss + s, ss + s, zfront, sprite.getU1(), sprite.getV0()+sv, packedLight);
-        vt(builder, matrix, -ss, ss + s, zfront, sprite.getU0(), sprite.getV0()+sv, packedLight);
+        vt(builder, matrix, -ss, ss, zback, u0, v0, packedLight);
+        vt(builder, matrix, ss, ss, zback, u1, v0, packedLight);
+        vt(builder, matrix, ss, ss, zfront, u1, v0+sv, packedLight);
+        vt(builder, matrix, -ss, ss, zfront, u0, v0+sv, packedLight);
 
         // UP
-        vt(builder, matrix, -ss, -ss, zfront, sprite.getU0(), sprite.getV0(), packedLight);
-        vt(builder, matrix, ss + s, -ss, zfront, sprite.getU1(), sprite.getV0(), packedLight);
-        vt(builder, matrix, ss + s, -ss, zback, sprite.getU1(), sprite.getV0()+sv, packedLight);
-        vt(builder, matrix, -ss, -ss, zback, sprite.getU0(), sprite.getV0()+sv, packedLight);
+        vt(builder, matrix, -ss, -ss, zfront, u0, v0, packedLight);
+        vt(builder, matrix, ss, -ss, zfront, u1, v0, packedLight);
+        vt(builder, matrix, ss, -ss, zback, u1, v0+sv, packedLight);
+        vt(builder, matrix, -ss, -ss, zback, u0, v0+sv, packedLight);
 
         // LEFT
-        vt(builder, matrix, -ss, -ss, zfront, sprite.getU0(), sprite.getV0(), packedLight);
-        vt(builder, matrix, -ss, -ss, zback, sprite.getU0()+su, sprite.getV0(), packedLight);
-        vt(builder, matrix, -ss, ss + s, zback, sprite.getU0()+su, sprite.getV1(), packedLight);
-        vt(builder, matrix, -ss, ss + s, zfront, sprite.getU0(), sprite.getV1(), packedLight);
+        vt(builder, matrix, -ss, -ss, zfront, u0, v0, packedLight);
+        vt(builder, matrix, -ss, -ss, zback, u0+su, v0, packedLight);
+        vt(builder, matrix, -ss, ss, zback, u0+su, v1, packedLight);
+        vt(builder, matrix, -ss, ss, zfront, u0, v1, packedLight);
 
         // RIGHT
-        vt(builder, matrix, ss + s, ss + s, zfront, sprite.getU0(), sprite.getV0(), packedLight);
-        vt(builder, matrix, ss + s, ss + s, zback, sprite.getU0()+su, sprite.getV0(), packedLight);
-        vt(builder, matrix, ss + s, -ss, zback, sprite.getU0()+su, sprite.getV1(), packedLight);
-        vt(builder, matrix, ss + s, -ss, zfront, sprite.getU0(), sprite.getV1(), packedLight);
+        vt(builder, matrix, ss, ss, zfront, u0, v0, packedLight);
+        vt(builder, matrix, ss, ss, zback, u0+su, v0, packedLight);
+        vt(builder, matrix, ss, -ss, zback, u0+su, v1, packedLight);
+        vt(builder, matrix, ss, -ss, zfront, u0, v1, packedLight);
 
 
         if (color != null) {

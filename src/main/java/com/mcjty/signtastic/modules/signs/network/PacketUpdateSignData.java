@@ -18,15 +18,18 @@ public class PacketUpdateSignData {
     private final int textColor;
     private final boolean bright;
     private final boolean transparent;
+    private final boolean large;
     private final List<String> lines;
     private final TextureType textureType;
 
-    public PacketUpdateSignData(BlockPos pos, List<String> lines, Integer backColor, int textColor, boolean bright, boolean transparent, TextureType textureType) {
+    public PacketUpdateSignData(BlockPos pos, List<String> lines, Integer backColor, int textColor,
+                                boolean bright, boolean transparent, boolean large, TextureType textureType) {
         this.pos = pos;
         this.lines = lines;
         this.backColor = backColor;
         this.textColor = textColor;
         this.bright = bright;
+        this.large = large;
         this.transparent = transparent;
         this.textureType = textureType;
     }
@@ -41,6 +44,7 @@ public class PacketUpdateSignData {
         textColor = buf.readInt();
         bright = buf.readBoolean();
         transparent = buf.readBoolean();
+        large = buf.readBoolean();
         textureType = TextureType.values()[buf.readInt()];
         int s = buf.readInt();
         lines = new ArrayList<>();
@@ -60,6 +64,7 @@ public class PacketUpdateSignData {
         buf.writeInt(textColor);
         buf.writeBoolean(bright);
         buf.writeBoolean(transparent);
+        buf.writeBoolean(large);
         buf.writeInt(textureType.ordinal());
         buf.writeInt(lines.size());
         lines.forEach(buf::writeUtf);
@@ -75,6 +80,7 @@ public class PacketUpdateSignData {
                 square.setBackColor(backColor);
                 square.setTextColor(textColor);
                 square.setBright(bright);
+                square.setLarge(large);
                 square.setTransparent(transparent);
                 square.setTextureType(textureType);
             }
