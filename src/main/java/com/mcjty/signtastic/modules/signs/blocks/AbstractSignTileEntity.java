@@ -34,6 +34,7 @@ public abstract class AbstractSignTileEntity extends GenericTileEntity {
     private boolean bright = false;         // True if the screen contents is full bright
     private TextureType type = TextureType.OAK;
     private boolean large = false;
+    private int imageIndex = 0;
 
     private List<String> lines = new ArrayList<>();
 
@@ -86,6 +87,7 @@ public abstract class AbstractSignTileEntity extends GenericTileEntity {
             if (type == null) {
                 type = TextureType.OAK;
             }
+            imageIndex = info.getInt("image");
             ListNBT linesTag = info.getList("lines", Constants.NBT.TAG_STRING);
             lines.clear();
             for (INBT tag : linesTag) {
@@ -105,6 +107,7 @@ public abstract class AbstractSignTileEntity extends GenericTileEntity {
         info.putInt("textColor", textColor);
         info.putBoolean("bright", bright);
         info.putBoolean("large", large);
+        info.putInt("image", imageIndex);
         info.putString("ttype", type.name().toLowerCase());
         ListNBT linesTag = new ListNBT();
         for (String line : lines) {
@@ -115,6 +118,15 @@ public abstract class AbstractSignTileEntity extends GenericTileEntity {
 
     public int getSize() {
         return 1;
+    }
+
+    public int getImageIndex() {
+        return imageIndex;
+    }
+
+    public void setImageIndex(int imageIndex) {
+        this.imageIndex = imageIndex;
+        markDirtyClient();
     }
 
     public Integer getBackColor() {

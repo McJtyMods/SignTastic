@@ -1,5 +1,6 @@
 package com.mcjty.signtastic.modules.signs.client;
 
+import com.mcjty.signtastic.SignTastic;
 import com.mcjty.signtastic.modules.signs.SignsModule;
 import com.mcjty.signtastic.modules.signs.TextureType;
 import com.mcjty.signtastic.modules.signs.blocks.AbstractSignBlock;
@@ -7,6 +8,7 @@ import com.mcjty.signtastic.modules.signs.blocks.AbstractSignTileEntity;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import mcjty.lib.client.CustomRenderTypes;
+import mcjty.lib.client.RenderHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -19,6 +21,7 @@ import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.SignTileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -26,6 +29,11 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 import javax.annotation.Nullable;
 
 public class SignRenderer extends TileEntityRenderer<AbstractSignTileEntity> {
+
+    public static final ResourceLocation SIGNS = new ResourceLocation(SignTastic.MODID, "varia/signs");
+    public static final int ICON_COLUMNS = 8;
+    public static final int ICON_ROWS = 8;
+    public static final int NUM_ICONS = 8;
 
     public SignRenderer(TileEntityRendererDispatcher dispatcher) {
         super(dispatcher);
@@ -79,9 +87,46 @@ public class SignRenderer extends TileEntityRenderer<AbstractSignTileEntity> {
                     tileEntity.getBackColor(), packedLightIn);
         }
 
+        if (tileEntity.getImageIndex() > 0) {
+            renderImage(tileEntity, matrixStack, buffer, tileEntity.isBright() ? 0xf000f0 : packedLightIn, tileEntity.getImageIndex());
+        }
+
         FontRenderer fontrenderer = Minecraft.getInstance().font;
         renderText(matrixStack, buffer, fontrenderer, tileEntity, tileEntity.isLarge(), packedLightIn);
 
+        matrixStack.popPose();
+    }
+
+    private static void renderImage(AbstractSignTileEntity tileEntity, MatrixStack matrixStack, IRenderTypeBuffer buffer, int packedLightIn,
+                                    int idx) {
+        matrixStack.pushPose();
+        matrixStack.scale(1, -1, -1);
+        TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(AtlasTexture.LOCATION_BLOCKS).apply(SIGNS);
+        IVertexBuilder builder = buffer.getBuffer(RenderType.cutout());
+        Matrix4f matrix = matrixStack.last().pose();
+        float dim = .46f;
+        float offs = -0.01f - tileEntity.getRenderOffset();
+
+        int sx = idx % ICON_COLUMNS;
+        int sy = idx / ICON_ROWS;
+
+        float u0 = sprite.getU0();
+        float v0 = sprite.getV0();
+        float v1 = sprite.getV1();
+        float u1 = sprite.getU1();
+
+        float du = (u1-u0)/ICON_COLUMNS;
+        float dv = (v1-v0)/ICON_ROWS;
+
+        u0 += sx * du;
+        u1 = u0 + du;
+        v0 += sy * dv;
+        v1 = v0 + dv;
+
+        vt(builder, matrix, -.46f, dim, offs, u0, v1, packedLightIn);
+        vt(builder, matrix, dim, dim, offs, u1, v1, packedLightIn);
+        vt(builder, matrix, dim, -.46f, offs, u1, v0, packedLightIn);
+        vt(builder, matrix, -.46f, -.46f, offs, u0, v0, packedLightIn);
         matrixStack.popPose();
     }
 

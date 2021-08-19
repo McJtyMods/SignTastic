@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 public class SignGui extends GenericGuiContainer<AbstractSignTileEntity, GenericContainer> {
 
+    public static final ResourceLocation SIGNS_GUI = new ResourceLocation(SignTastic.MODID, "textures/varia/signs.png");
     private static final ResourceLocation BACKGROUND = new ResourceLocation(SignTastic.MODID, "textures/gui/signgui.png");
     public static final int WIDTH = 215;
     public static final int HEIGHT = 200;
@@ -33,6 +34,7 @@ public class SignGui extends GenericGuiContainer<AbstractSignTileEntity, Generic
     private ToggleButton transparentButton;
     private ToggleButton largeButton;
     private ChoiceLabel textureTypeLabel;
+    private ImageChoiceLabel imageLabel;
 
     public SignGui(AbstractSignTileEntity tileEntity, GenericContainer container, PlayerInventory inventory) {
         super(tileEntity, container, inventory, ManualEntry.EMPTY);
@@ -56,18 +58,18 @@ public class SignGui extends GenericGuiContainer<AbstractSignTileEntity, Generic
                 .pressed(tileEntity.getBackColor() != null)
                 .event(this::update);
         backColorSelector = new ColorSelector()
-                .hint(23, HEIGHT-40, 50, 16)
+                .hint(23, HEIGHT-40, 45, 16)
                 .text("Back")
                 .currentColor(tileEntity.getBackColor() == null ? 0 : tileEntity.getBackColor())
                 .enabled(tileEntity.getBackColor() != null)
                 .event(s -> update());
         textColorSelector = new ColorSelector()
-                .hint(80, HEIGHT-40, 50, 16)
+                .hint(75, HEIGHT-40, 36, 16)
                 .text("Txt")
                 .currentColor(tileEntity.getTextColor())
                 .event(s -> update());
         textureTypeLabel = new ChoiceLabel()
-                .hint(135, HEIGHT-40, 70, 16)
+                .hint(116, HEIGHT-40, 60, 16)
                 .choices(Arrays.stream(TextureType.values()).sorted().map(s -> s.name().toLowerCase()).toArray(String[]::new))
                 .choice(tileEntity.getTextureType().name().toLowerCase())
                 .event(s -> update());
@@ -89,12 +91,21 @@ public class SignGui extends GenericGuiContainer<AbstractSignTileEntity, Generic
                 .checkMarker(true)
                 .pressed(tileEntity.isLarge())
                 .event(this::updateLarge);
+        imageLabel = new ImageChoiceLabel()
+                .hint(178, HEIGHT-35, 32, 32)
+                .event(s -> update());
+        for (int i = 0 ; i <= SignRenderer.NUM_ICONS ; i++) {
+            int u = 32*(i % SignRenderer.ICON_COLUMNS);
+            int v = 32*(i / SignRenderer.ICON_ROWS);
+            imageLabel.choice("" + i, "", SIGNS_GUI, u, v);
+        }
+        imageLabel.setCurrentChoice(tileEntity.getImageIndex());
 
         Panel toplevel = Widgets.positional()
                 .background(BACKGROUND)
                 .children(labels)
                 .children(backColorButton, backColorSelector, textColorSelector, fullBrightButton, transparentButton,
-                        textureTypeLabel, largeButton);
+                        textureTypeLabel, largeButton, imageLabel);
         toplevel.bounds(leftPos, topPos, WIDTH, HEIGHT);
 
         window = new Window(this, toplevel);
@@ -128,7 +139,8 @@ public class SignGui extends GenericGuiContainer<AbstractSignTileEntity, Generic
                 backColorButton.isPressed() ? backColorSelector.getCurrentColor() : null,
                 textColorSelector.getCurrentColor(), fullBrightButton.isPressed(), transparentButton.isPressed(),
                 largeButton.isPressed(),
-                TextureType.getByName(textureTypeLabel.getCurrentChoice())));
+                TextureType.getByName(textureTypeLabel.getCurrentChoice()),
+                imageLabel.getCurrentChoiceIndex()));
     }
 
     @Override

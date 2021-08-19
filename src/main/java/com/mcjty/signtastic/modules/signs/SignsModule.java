@@ -1,6 +1,7 @@
 package com.mcjty.signtastic.modules.signs;
 
 import com.mcjty.signtastic.modules.signs.blocks.*;
+import com.mcjty.signtastic.modules.signs.client.ClientSetup;
 import com.mcjty.signtastic.modules.signs.client.SignGui;
 import com.mcjty.signtastic.modules.signs.client.SignRenderer;
 import mcjty.lib.container.GenericContainer;
@@ -8,9 +9,12 @@ import mcjty.lib.modules.IModule;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 import static com.mcjty.signtastic.setup.Registration.*;
 
@@ -29,6 +33,12 @@ public class SignsModule implements IModule {
     public static final RegistryObject<TileEntityType<SlabSignTileEntity>> TYPE_SLAB_SIGN = TILES.register("slab_sign", () -> TileEntityType.Builder.of(SlabSignTileEntity::new, SLAB_SIGN.get()).build(null));
 
     public static final RegistryObject<ContainerType<GenericContainer>> CONTAINER_SIGN = CONTAINERS.register("sign_container", GenericContainer::createContainerType);
+
+    public SignsModule() {
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+            FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::onTextureStitch);
+        });
+    }
 
     @Override
     public void init(FMLCommonSetupEvent event) {

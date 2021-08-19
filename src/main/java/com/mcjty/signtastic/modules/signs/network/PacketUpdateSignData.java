@@ -19,11 +19,13 @@ public class PacketUpdateSignData {
     private final boolean bright;
     private final boolean transparent;
     private final boolean large;
+    private final int imageIndex;
     private final List<String> lines;
     private final TextureType textureType;
 
     public PacketUpdateSignData(BlockPos pos, List<String> lines, Integer backColor, int textColor,
-                                boolean bright, boolean transparent, boolean large, TextureType textureType) {
+                                boolean bright, boolean transparent, boolean large, TextureType textureType,
+                                int imageIndex) {
         this.pos = pos;
         this.lines = lines;
         this.backColor = backColor;
@@ -32,6 +34,7 @@ public class PacketUpdateSignData {
         this.large = large;
         this.transparent = transparent;
         this.textureType = textureType;
+        this.imageIndex = imageIndex;
     }
 
     public PacketUpdateSignData(PacketBuffer buf) {
@@ -46,6 +49,7 @@ public class PacketUpdateSignData {
         transparent = buf.readBoolean();
         large = buf.readBoolean();
         textureType = TextureType.values()[buf.readInt()];
+        imageIndex = buf.readInt();
         int s = buf.readInt();
         lines = new ArrayList<>();
         for (int i = 0; i < s; i++) {
@@ -66,6 +70,7 @@ public class PacketUpdateSignData {
         buf.writeBoolean(transparent);
         buf.writeBoolean(large);
         buf.writeInt(textureType.ordinal());
+        buf.writeInt(imageIndex);
         buf.writeInt(lines.size());
         lines.forEach(buf::writeUtf);
     }
@@ -75,14 +80,15 @@ public class PacketUpdateSignData {
         ctx.enqueueWork(() -> {
             TileEntity te = ctx.getSender().getLevel().getBlockEntity(pos);
             if (te instanceof AbstractSignTileEntity) {
-                AbstractSignTileEntity square = (AbstractSignTileEntity) te;
-                square.setLines(lines);
-                square.setBackColor(backColor);
-                square.setTextColor(textColor);
-                square.setBright(bright);
-                square.setLarge(large);
-                square.setTransparent(transparent);
-                square.setTextureType(textureType);
+                AbstractSignTileEntity sign = (AbstractSignTileEntity) te;
+                sign.setLines(lines);
+                sign.setBackColor(backColor);
+                sign.setTextColor(textColor);
+                sign.setBright(bright);
+                sign.setLarge(large);
+                sign.setTransparent(transparent);
+                sign.setTextureType(textureType);
+                sign.setImageIndex(imageIndex);
             }
         });
         return true;
