@@ -88,7 +88,7 @@ public class PacketUpdateSignData {
                 sign.setLarge(large);
                 sign.setTransparent(transparent);
                 sign.setTextureType(textureType);
-                sign.setImageIndex(imageIndex);
+                sign.setIconIndex(imageIndex);
             }
         });
         return true;

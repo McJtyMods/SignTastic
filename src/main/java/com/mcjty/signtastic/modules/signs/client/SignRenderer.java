@@ -1,14 +1,15 @@
 package com.mcjty.signtastic.modules.signs.client;
 
 import com.mcjty.signtastic.SignTastic;
+import com.mcjty.signtastic.modules.signs.SignSettings;
 import com.mcjty.signtastic.modules.signs.SignsModule;
 import com.mcjty.signtastic.modules.signs.TextureType;
 import com.mcjty.signtastic.modules.signs.blocks.AbstractSignBlock;
 import com.mcjty.signtastic.modules.signs.blocks.AbstractSignTileEntity;
+import com.mcjty.signtastic.setup.Config;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import mcjty.lib.client.CustomRenderTypes;
-import mcjty.lib.client.RenderHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -19,7 +20,6 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.tileentity.SignTileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Matrix4f;
@@ -31,9 +31,6 @@ import javax.annotation.Nullable;
 public class SignRenderer extends TileEntityRenderer<AbstractSignTileEntity> {
 
     public static final ResourceLocation SIGNS = new ResourceLocation(SignTastic.MODID, "varia/signs");
-    public static final int ICON_COLUMNS = 8;
-    public static final int ICON_ROWS = 8;
-    public static final int NUM_ICONS = 8;
 
     public SignRenderer(TileEntityRendererDispatcher dispatcher) {
         super(dispatcher);
@@ -81,24 +78,28 @@ public class SignRenderer extends TileEntityRenderer<AbstractSignTileEntity> {
         matrixStack.mulPose(Vector3f.XP.rotationDegrees(xRotation));
         matrixStack.translate(0.0F, 0.0F, -0.4375F);
 
-        if (!tileEntity.isTransparent()) {
-            renderScreenBoard(matrixStack, buffer, tileEntity.getTextureType(),
+        SignSettings settings = tileEntity.getSettings();
+
+        if (!settings.isTransparent()) {
+            renderScreenBoard(matrixStack, buffer, settings.getTextureType(),
                     tileEntity.getRenderOffset(),
-                    tileEntity.getBackColor(), packedLightIn);
+                    settings.getBackColor(), packedLightIn);
         }
 
-        if (tileEntity.getImageIndex() > 0) {
-            renderImage(tileEntity, matrixStack, buffer, tileEntity.isBright() ? 0xf000f0 : packedLightIn, tileEntity.getImageIndex());
+        if (settings.getIconIndex() > 0) {
+            renderImage(tileEntity, matrixStack, buffer, settings.isBright() ? 0xf000f0 : packedLightIn, settings.getIconIndex());
         }
 
         FontRenderer fontrenderer = Minecraft.getInstance().font;
-        renderText(matrixStack, buffer, fontrenderer, tileEntity, tileEntity.isLarge(), packedLightIn);
+        renderText(matrixStack, buffer, fontrenderer, tileEntity, settings.isLarge(), packedLightIn);
 
         matrixStack.popPose();
     }
 
     private static void renderImage(AbstractSignTileEntity tileEntity, MatrixStack matrixStack, IRenderTypeBuffer buffer, int packedLightIn,
                                     int idx) {
+        int cols = Config.HORIZONTAL_ICONS.get();
+        int rows = Config.VERTICAL_ICONS.get();
         matrixStack.pushPose();
         matrixStack.scale(1, -1, -1);
         TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(AtlasTexture.LOCATION_BLOCKS).apply(SIGNS);
@@ -107,16 +108,16 @@ public class SignRenderer extends TileEntityRenderer<AbstractSignTileEntity> {
         float dim = .46f;
         float offs = -0.01f - tileEntity.getRenderOffset();
 
-        int sx = idx % ICON_COLUMNS;
-        int sy = idx / ICON_ROWS;
+        int sx = idx % cols;
+        int sy = idx / rows;
 
         float u0 = sprite.getU0();
         float v0 = sprite.getV0();
         float v1 = sprite.getV1();
         float u1 = sprite.getU1();
 
-        float du = (u1-u0)/ICON_COLUMNS;
-        float dv = (v1-v0)/ICON_ROWS;
+        float du = (u1-u0)/cols;
+        float dv = (v1-v0)/rows;
 
         u0 += sx * du;
         u1 = u0 + du;
@@ -131,6 +132,7 @@ public class SignRenderer extends TileEntityRenderer<AbstractSignTileEntity> {
     }
 
     private static void renderText(MatrixStack matrixStack, IRenderTypeBuffer buffer, FontRenderer fontrenderer, AbstractSignTileEntity tileEntity, boolean large, int lightmapValue) {
+        SignSettings settings = tileEntity.getSettings();
         float factor = 2.0f + (large ? 2 : 0);
         int currenty = 9 - (large ? 4 : 0);
 
@@ -141,12 +143,12 @@ public class SignRenderer extends TileEntityRenderer<AbstractSignTileEntity> {
         matrixStack.scale(f * factor, -1.0f * f * factor, f);
         int l = 0;
         int linesSupported = tileEntity.getLinesSupported();
-        if (tileEntity.isLarge()) {
+        if (settings.isLarge()) {
             linesSupported /= 2;
         }
         for (String line : tileEntity.getLines()) {
-            fontrenderer.drawInBatch(line, 5, currenty, 0xff000000 | tileEntity.getTextColor(), false, matrixStack.last().pose(), buffer, false, 0,
-                    tileEntity.isBright() ? 0xf000f0 : lightmapValue);
+            fontrenderer.drawInBatch(line, 5, currenty, 0xff000000 | settings.getTextColor(), false, matrixStack.last().pose(), buffer, false, 0,
+                    settings.isBright() ? 0xf000f0 : lightmapValue);
             currenty += 10;
             l++;
             if (l >= linesSupported) {

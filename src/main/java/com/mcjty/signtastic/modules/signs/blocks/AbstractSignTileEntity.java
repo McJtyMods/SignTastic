@@ -1,5 +1,6 @@
 package com.mcjty.signtastic.modules.signs.blocks;
 
+import com.mcjty.signtastic.modules.signs.SignSettings;
 import com.mcjty.signtastic.modules.signs.SignsModule;
 import com.mcjty.signtastic.modules.signs.TextureType;
 import mcjty.lib.api.container.CapabilityContainerProvider;
@@ -28,13 +29,7 @@ import java.util.List;
 
 public abstract class AbstractSignTileEntity extends GenericTileEntity {
 
-    private boolean transparent = false;
-    private Integer backColor = null;       // Color of background
-    private int textColor = 0xffffff;       // Color of text
-    private boolean bright = false;         // True if the screen contents is full bright
-    private TextureType type = TextureType.OAK;
-    private boolean large = false;
-    private int imageIndex = 0;
+    private SignSettings settings = new SignSettings();
 
     private List<String> lines = new ArrayList<>();
 
@@ -74,20 +69,7 @@ public abstract class AbstractSignTileEntity extends GenericTileEntity {
         super.readInfo(tagCompound);
         if (tagCompound.contains("Info")) {
             CompoundNBT info = tagCompound.getCompound("Info");
-            transparent = info.getBoolean("transparent");
-            if (info.contains("backColor")) {
-                backColor = info.getInt("backColor");
-            } else {
-                backColor = null;
-            }
-            textColor = info.getInt("textColor");
-            bright = info.getBoolean("bright");
-            large = info.getBoolean("large");
-            type = TextureType.getByName(info.getString("ttype"));
-            if (type == null) {
-                type = TextureType.OAK;
-            }
-            imageIndex = info.getInt("image");
+            settings.read(info);
             ListNBT linesTag = info.getList("lines", Constants.NBT.TAG_STRING);
             lines.clear();
             for (INBT tag : linesTag) {
@@ -100,15 +82,7 @@ public abstract class AbstractSignTileEntity extends GenericTileEntity {
     protected void writeInfo(CompoundNBT tagCompound) {
         super.writeInfo(tagCompound);
         CompoundNBT info = getOrCreateInfo(tagCompound);
-        info.putBoolean("transparent", transparent);
-        if (backColor != null) {
-            info.putInt("backColor", backColor);
-        }
-        info.putInt("textColor", textColor);
-        info.putBoolean("bright", bright);
-        info.putBoolean("large", large);
-        info.putInt("image", imageIndex);
-        info.putString("ttype", type.name().toLowerCase());
+        settings.write(info);
         ListNBT linesTag = new ListNBT();
         for (String line : lines) {
             linesTag.add(StringNBT.valueOf(line));
@@ -120,66 +94,42 @@ public abstract class AbstractSignTileEntity extends GenericTileEntity {
         return 1;
     }
 
-    public int getImageIndex() {
-        return imageIndex;
+    public SignSettings getSettings() {
+        return settings;
     }
 
-    public void setImageIndex(int imageIndex) {
-        this.imageIndex = imageIndex;
+    public void setIconIndex(int iconIndex) {
+        settings.setIconIndex(iconIndex);
         markDirtyClient();
-    }
-
-    public Integer getBackColor() {
-        return backColor;
     }
 
     public void setBackColor(Integer backColor) {
-        this.backColor = backColor;
+        settings.setBackColor(backColor);
         markDirtyClient();
-    }
-
-    public int getTextColor() {
-        return textColor;
     }
 
     public void setTextColor(int textColor) {
-        this.textColor = textColor;
+        settings.setTextColor(textColor);
         markDirtyClient();
-    }
-
-    public boolean isBright() {
-        return bright;
     }
 
     public void setBright(boolean bright) {
-        this.bright = bright;
+        settings.setBright(bright);
         markDirtyClient();
     }
 
-    public boolean isLarge() {
-        return large;
-    }
-
     public void setLarge(boolean large) {
-        this.large = large;
+        settings.setLarge(large);
         markDirtyClient();
     }
 
     public void setTransparent(boolean transparent) {
-        this.transparent = transparent;
+        settings.setTransparent(transparent);
         markDirtyClient();
     }
 
-    public boolean isTransparent() {
-        return transparent;
-    }
-
-    public TextureType getTextureType() {
-        return type;
-    }
-
     public void setTextureType(TextureType type) {
-        this.type = type;
+        settings.setTextureType(type);
         markDirtyClient();
     }
 

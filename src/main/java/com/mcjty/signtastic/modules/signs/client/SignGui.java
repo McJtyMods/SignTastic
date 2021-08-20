@@ -1,10 +1,12 @@
 package com.mcjty.signtastic.modules.signs.client;
 
 import com.mcjty.signtastic.SignTastic;
+import com.mcjty.signtastic.modules.signs.SignSettings;
 import com.mcjty.signtastic.modules.signs.SignsModule;
 import com.mcjty.signtastic.modules.signs.TextureType;
 import com.mcjty.signtastic.modules.signs.blocks.AbstractSignTileEntity;
 import com.mcjty.signtastic.modules.signs.network.PacketUpdateSignData;
+import com.mcjty.signtastic.setup.Config;
 import com.mcjty.signtastic.setup.Messages;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import mcjty.lib.container.GenericContainer;
@@ -51,55 +53,56 @@ public class SignGui extends GenericGuiContainer<AbstractSignTileEntity, Generic
         for (int i = 0 ; i < labels.length ; i++) {
             labels[i] = Widgets.textfield(10, 10+18*i, WIDTH-20, 16).event(s -> update());
         }
+        SignSettings settings = tileEntity.getSettings();
         backColorButton = new ToggleButton()
                 .hint(10, HEIGHT-40, 13, 16)
                 .text("")
                 .checkMarker(true)
-                .pressed(tileEntity.getBackColor() != null)
+                .pressed(settings.getBackColor() != null)
                 .event(this::update);
         backColorSelector = new ColorSelector()
                 .hint(23, HEIGHT-40, 45, 16)
                 .text("Back")
-                .currentColor(tileEntity.getBackColor() == null ? 0 : tileEntity.getBackColor())
-                .enabled(tileEntity.getBackColor() != null)
+                .currentColor(settings.getBackColor() == null ? 0 : settings.getBackColor())
+                .enabled(settings.getBackColor() != null)
                 .event(s -> update());
         textColorSelector = new ColorSelector()
                 .hint(75, HEIGHT-40, 36, 16)
                 .text("Txt")
-                .currentColor(tileEntity.getTextColor())
+                .currentColor(settings.getTextColor())
                 .event(s -> update());
         textureTypeLabel = new ChoiceLabel()
                 .hint(116, HEIGHT-40, 60, 16)
                 .choices(Arrays.stream(TextureType.values()).sorted().map(s -> s.name().toLowerCase()).toArray(String[]::new))
-                .choice(tileEntity.getTextureType().name().toLowerCase())
+                .choice(settings.getTextureType().name().toLowerCase())
                 .event(s -> update());
         fullBrightButton = new ToggleButton()
                 .hint(10, HEIGHT-20, 50, 16)
                 .text("Bright")
                 .checkMarker(true)
-                .pressed(tileEntity.isBright())
+                .pressed(settings.isBright())
                 .event(this::update);
         transparentButton = new ToggleButton()
                 .hint(65, HEIGHT-20, 55, 16)
                 .text("Transp")
                 .checkMarker(true)
-                .pressed(tileEntity.isTransparent())
+                .pressed(settings.isTransparent())
                 .event(this::update);
         largeButton = new ToggleButton()
                 .hint(125, HEIGHT-20, 50, 16)
                 .text("Large")
                 .checkMarker(true)
-                .pressed(tileEntity.isLarge())
+                .pressed(settings.isLarge())
                 .event(this::updateLarge);
         imageLabel = new ImageChoiceLabel()
-                .hint(178, HEIGHT-35, 32, 32)
+                .hint(178, HEIGHT-35, Config.ICON_SIZE.get(), Config.ICON_SIZE.get())
                 .event(s -> update());
-        for (int i = 0 ; i <= SignRenderer.NUM_ICONS ; i++) {
-            int u = 32*(i % SignRenderer.ICON_COLUMNS);
-            int v = 32*(i / SignRenderer.ICON_ROWS);
+        for (int i = 0 ; i <= Config.ICONS.get() ; i++) {
+            int u = 32*(i % Config.HORIZONTAL_ICONS.get());
+            int v = 32*(i / Config.VERTICAL_ICONS.get());
             imageLabel.choice("" + i, "", SIGNS_GUI, u, v);
         }
-        imageLabel.setCurrentChoice(tileEntity.getImageIndex());
+        imageLabel.setCurrentChoice(settings.getIconIndex());
 
         Panel toplevel = Widgets.positional()
                 .background(BACKGROUND)

@@ -17,6 +17,8 @@ public class Items extends BaseItemModelProvider {
         parentedBlock(SignsModule.SQUARE_SIGN.get(), "block/square_sign");
         parentedBlock(SignsModule.BLOCK_SIGN.get(), "block/block_sign");
         parentedBlock(SignsModule.SLAB_SIGN.get(), "block/slab_sign");
+
+        itemGenerated(SignsModule.SIGN_CONFIGURATOR.get(), "item/sign_configurator");
     }
 
     @Override

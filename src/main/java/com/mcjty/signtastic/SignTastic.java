@@ -1,6 +1,7 @@
 package com.mcjty.signtastic;
 
 import com.mcjty.signtastic.modules.signs.SignsModule;
+import com.mcjty.signtastic.setup.Config;
 import com.mcjty.signtastic.setup.ModSetup;
 import com.mcjty.signtastic.setup.Registration;
 import mcjty.lib.modules.Modules;
@@ -20,6 +21,7 @@ public class SignTastic {
     private Modules modules = new Modules();
 
     public SignTastic() {
+        Config.register();
         setupModules();
         Registration.register();
 

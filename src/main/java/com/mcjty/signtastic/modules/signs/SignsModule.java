@@ -4,6 +4,7 @@ import com.mcjty.signtastic.modules.signs.blocks.*;
 import com.mcjty.signtastic.modules.signs.client.ClientSetup;
 import com.mcjty.signtastic.modules.signs.client.SignGui;
 import com.mcjty.signtastic.modules.signs.client.SignRenderer;
+import com.mcjty.signtastic.modules.signs.items.SignConfiguratorItem;
 import mcjty.lib.container.GenericContainer;
 import mcjty.lib.modules.IModule;
 import net.minecraft.inventory.container.ContainerType;
@@ -33,6 +34,9 @@ public class SignsModule implements IModule {
     public static final RegistryObject<TileEntityType<SlabSignTileEntity>> TYPE_SLAB_SIGN = TILES.register("slab_sign", () -> TileEntityType.Builder.of(SlabSignTileEntity::new, SLAB_SIGN.get()).build(null));
 
     public static final RegistryObject<ContainerType<GenericContainer>> CONTAINER_SIGN = CONTAINERS.register("sign_container", GenericContainer::createContainerType);
+
+    public static final RegistryObject<SignConfiguratorItem> SIGN_CONFIGURATOR = ITEMS.register("sign_configurator", SignConfiguratorItem::new);
+
 
     public SignsModule() {
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
