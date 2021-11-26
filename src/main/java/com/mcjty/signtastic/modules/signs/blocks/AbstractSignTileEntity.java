@@ -3,11 +3,10 @@ package com.mcjty.signtastic.modules.signs.blocks;
 import com.mcjty.signtastic.modules.signs.SignSettings;
 import com.mcjty.signtastic.modules.signs.SignsModule;
 import com.mcjty.signtastic.modules.signs.TextureType;
-import mcjty.lib.api.container.CapabilityContainerProvider;
 import mcjty.lib.api.container.DefaultContainerProvider;
-import mcjty.lib.container.ContainerFactory;
-import mcjty.lib.container.EmptyContainerFactory;
 import mcjty.lib.container.GenericContainer;
+import mcjty.lib.tileentity.Cap;
+import mcjty.lib.tileentity.CapType;
 import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.nbt.CompoundNBT;
@@ -15,15 +14,10 @@ import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.nbt.StringNBT;
 import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.common.util.Lazy;
 import net.minecraftforge.common.util.LazyOptional;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,9 +27,9 @@ public abstract class AbstractSignTileEntity extends GenericTileEntity {
 
     private List<String> lines = new ArrayList<>();
 
-    public static final Lazy<ContainerFactory> CONTAINER_FACTORY = Lazy.of(EmptyContainerFactory::new);
+    @Cap(type = CapType.CONTAINER)
     private final LazyOptional<INamedContainerProvider> screenHandler = LazyOptional.of(() -> new DefaultContainerProvider<GenericContainer>("Builder")
-            .containerSupplier((windowId, player) -> new GenericContainer(SignsModule.CONTAINER_SIGN.get(), windowId, CONTAINER_FACTORY.get(), getBlockPos(), AbstractSignTileEntity.this))
+            .containerSupplier(DefaultContainerProvider.empty(SignsModule.CONTAINER_SIGN, this))
     );
 
     public AbstractSignTileEntity(TileEntityType<?> type) {
@@ -65,8 +59,7 @@ public abstract class AbstractSignTileEntity extends GenericTileEntity {
     }
 
     @Override
-    protected void readInfo(CompoundNBT tagCompound) {
-        super.readInfo(tagCompound);
+    public void readClientDataFromNBT(CompoundNBT tagCompound) {
         if (tagCompound.contains("Info")) {
             CompoundNBT info = tagCompound.getCompound("Info");
             settings.read(info);
@@ -79,8 +72,7 @@ public abstract class AbstractSignTileEntity extends GenericTileEntity {
     }
 
     @Override
-    protected void writeInfo(CompoundNBT tagCompound) {
-        super.writeInfo(tagCompound);
+    public void writeClientDataToNBT(CompoundNBT tagCompound) {
         CompoundNBT info = getOrCreateInfo(tagCompound);
         settings.write(info);
         ListNBT linesTag = new ListNBT();
@@ -88,6 +80,18 @@ public abstract class AbstractSignTileEntity extends GenericTileEntity {
             linesTag.add(StringNBT.valueOf(line));
         }
         info.put("lines", linesTag);
+    }
+
+    @Override
+    protected void readInfo(CompoundNBT tagCompound) {
+        super.readInfo(tagCompound);
+        readClientDataFromNBT(tagCompound);
+    }
+
+    @Override
+    protected void writeInfo(CompoundNBT tagCompound) {
+        super.writeInfo(tagCompound);
+        writeClientDataToNBT(tagCompound);
     }
 
     public int getSize() {
@@ -131,14 +135,5 @@ public abstract class AbstractSignTileEntity extends GenericTileEntity {
     public void setTextureType(TextureType type) {
         settings.setTextureType(type);
         markDirtyClient();
-    }
-
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction facing) {
-        if (cap == CapabilityContainerProvider.CONTAINER_PROVIDER_CAPABILITY) {
-            return screenHandler.cast();
-        }
-        return super.getCapability(cap, facing);
     }
 }

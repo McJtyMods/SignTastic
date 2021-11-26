@@ -52,3 +52,9 @@ Signs signs and signs
     versionRange="[1.16.5,)"
     ordering="NONE"
     side="BOTH"
+[[dependencies.signtastic]]
+    modId="mcjtylib"
+    mandatory=true
+    versionRange="[1.16-5.0.24,)"
+    ordering="AFTER"
+    side="BOTH"
