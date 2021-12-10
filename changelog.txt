@@ -1,2 +1,5 @@
+1.16-0.0.3:
+- Updated to latest version of McJtyLib
+
 1.16-0.0.2:
 - Updated to latest version of McJtyLib

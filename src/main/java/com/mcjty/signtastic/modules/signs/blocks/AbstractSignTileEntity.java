@@ -59,7 +59,7 @@ public abstract class AbstractSignTileEntity extends GenericTileEntity {
     }
 
     @Override
-    public void readClientDataFromNBT(CompoundNBT tagCompound) {
+    public void loadClientDataFromNBT(CompoundNBT tagCompound) {
         if (tagCompound.contains("Info")) {
             CompoundNBT info = tagCompound.getCompound("Info");
             settings.read(info);
@@ -72,7 +72,7 @@ public abstract class AbstractSignTileEntity extends GenericTileEntity {
     }
 
     @Override
-    public void writeClientDataToNBT(CompoundNBT tagCompound) {
+    public void saveClientDataToNBT(CompoundNBT tagCompound) {
         CompoundNBT info = getOrCreateInfo(tagCompound);
         settings.write(info);
         ListNBT linesTag = new ListNBT();
@@ -83,15 +83,15 @@ public abstract class AbstractSignTileEntity extends GenericTileEntity {
     }
 
     @Override
-    protected void readInfo(CompoundNBT tagCompound) {
-        super.readInfo(tagCompound);
-        readClientDataFromNBT(tagCompound);
+    protected void loadInfo(CompoundNBT tagCompound) {
+        super.loadInfo(tagCompound);
+        loadClientDataFromNBT(tagCompound);
     }
 
     @Override
-    protected void writeInfo(CompoundNBT tagCompound) {
-        super.writeInfo(tagCompound);
-        writeClientDataToNBT(tagCompound);
+    protected void saveInfo(CompoundNBT tagCompound) {
+        super.saveInfo(tagCompound);
+        saveClientDataToNBT(tagCompound);
     }
 
     public int getSize() {
