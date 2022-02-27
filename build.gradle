@@ -3,7 +3,6 @@ buildscript {
         maven { url = 'https://files.minecraftforge.net/maven' }
         maven { url = 'https://maven.parchmentmc.org' }
         maven { url 'https://plugins.gradle.org/m2/' }
-        jcenter()
         mavenCentral()
     }
     dependencies {
@@ -22,10 +21,6 @@ repositories {
     maven { // JEI
         url "https://dvs1.progwml6.com/files/maven"
     }
-    maven { // TOP
-        name 'tterrag maven'
-        url "https://maven.tterrag.com/"
-    }
     maven { // McJtyLib
         url "https://maven.k-4u.nl"
     }
@@ -34,10 +29,10 @@ repositories {
 group = 'com.mcjty.signtastic' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'signtastic'
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+java.toolchain.languageVersion = JavaLanguageVersion.of(17) // Need this here so eclipse task generates correctly.
 
 minecraft {
-    mappings channel: 'parchment', version: "2021.10.03-1.16.5"
+    mappings channel: 'parchment', version: "2022.02.13-1.18.1"
     runs {
         client {
             workingDirectory project.file('run')
@@ -103,7 +98,7 @@ dependencies {
     compileOnly fg.deobf("mezz.jei:jei-${jei_version}:api")
     runtimeOnly fg.deobf("mezz.jei:jei-${jei_version}")
 
-    implementation fg.deobf(project.dependencies.create("mcjty.theoneprobe:TheOneProbe-${top_version}") {
+    implementation fg.deobf(project.dependencies.create("mcjty.theoneprobe:theoneprobe:${top_version}") {
         transitive = false
     })
     if (findProject(':McJtyLib') != null) {

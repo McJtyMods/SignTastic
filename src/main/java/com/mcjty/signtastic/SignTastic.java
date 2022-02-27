@@ -18,7 +18,7 @@ public class SignTastic {
 
     @SuppressWarnings("PublicField")
     public static ModSetup setup = new ModSetup();
-    private Modules modules = new Modules();
+    private final Modules modules = new Modules();
 
     public SignTastic() {
         Config.register();

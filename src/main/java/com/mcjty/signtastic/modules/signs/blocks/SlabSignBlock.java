@@ -1,26 +1,25 @@
 package com.mcjty.signtastic.modules.signs.blocks;
 
 import mcjty.lib.builder.BlockBuilder;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.IBlockReader;
-
-import java.util.function.Supplier;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.key;
-import static net.minecraft.state.properties.BlockStateProperties.FACING;
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.FACING;
 
 public class SlabSignBlock extends AbstractSignBlock {
 
-    public SlabSignBlock(Supplier<TileEntity> supplier) {
+    public SlabSignBlock(BlockEntityType.BlockEntitySupplier<BlockEntity> supplier) {
         super(new BlockBuilder()
                 .properties(Properties.of(Material.STONE).strength(1.0F).sound(SoundType.STONE).noOcclusion())
 //                .topDriver(RFToolsUtilityTOPDriver.DRIVER)
@@ -29,16 +28,17 @@ public class SlabSignBlock extends AbstractSignBlock {
                 .tileEntitySupplier(supplier));
     }
 
-    public static final VoxelShape BLOCK_AABB = VoxelShapes.box(0F, 0F, 0F, 1F, 1F, 1F);
-    public static final VoxelShape NORTH_AABB = VoxelShapes.box(.01F, .01F, 8F / 16f, .99F, .99F, 1F);
-    public static final VoxelShape SOUTH_AABB = VoxelShapes.box(.01F, .01F, 0F, .99F, .99F, 8F / 16f);
-    public static final VoxelShape WEST_AABB = VoxelShapes.box(8F / 16f, .01F, .01F, 1F, .99F, .99F);
-    public static final VoxelShape EAST_AABB = VoxelShapes.box(0F, .01F, .01F, 8F / 16f, .99F, .99F);
-    public static final VoxelShape UP_AABB = VoxelShapes.box(.01F, 0F, .01F, 1F, 8F / 16f, .99F);
-    public static final VoxelShape DOWN_AABB = VoxelShapes.box(.01F, 8F / 16f, .01F, .99F, 1F, .99F);
+    public static final VoxelShape BLOCK_AABB = Shapes.box(0F, 0F, 0F, 1F, 1F, 1F);
+    public static final VoxelShape NORTH_AABB = Shapes.box(.01F, .01F, 8F / 16f, .99F, .99F, 1F);
+    public static final VoxelShape SOUTH_AABB = Shapes.box(.01F, .01F, 0F, .99F, .99F, 8F / 16f);
+    public static final VoxelShape WEST_AABB = Shapes.box(8F / 16f, .01F, .01F, 1F, .99F, .99F);
+    public static final VoxelShape EAST_AABB = Shapes.box(0F, .01F, .01F, 8F / 16f, .99F, .99F);
+    public static final VoxelShape UP_AABB = Shapes.box(.01F, 0F, .01F, 1F, 8F / 16f, .99F);
+    public static final VoxelShape DOWN_AABB = Shapes.box(.01F, 8F / 16f, .01F, .99F, 1F, .99F);
+
 
     @Override
-    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
         Direction facing = state.getValue(FACING);
         if (facing == Direction.NORTH) {
             return NORTH_AABB;

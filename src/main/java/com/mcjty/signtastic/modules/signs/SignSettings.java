@@ -1,10 +1,6 @@
 package com.mcjty.signtastic.modules.signs;
 
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.nbt.StringNBT;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.CompoundTag;
 
 public class SignSettings {
 
@@ -72,7 +68,7 @@ public class SignSettings {
         this.iconIndex = iconIndex;
     }
 
-    public void read(CompoundNBT tag) {
+    public void read(CompoundTag tag) {
         transparent = tag.getBoolean("transparent");
         if (tag.contains("backColor")) {
             backColor = tag.getInt("backColor");
@@ -89,7 +85,7 @@ public class SignSettings {
         }
     }
 
-    public void write(CompoundNBT tag) {
+    public void write(CompoundTag tag) {
         tag.putBoolean("transparent", transparent);
         if (backColor != null) {
             tag.putInt("backColor", backColor);
