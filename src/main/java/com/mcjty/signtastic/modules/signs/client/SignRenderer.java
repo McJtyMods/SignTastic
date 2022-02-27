@@ -7,44 +7,44 @@ import com.mcjty.signtastic.modules.signs.TextureType;
 import com.mcjty.signtastic.modules.signs.blocks.AbstractSignBlock;
 import com.mcjty.signtastic.modules.signs.blocks.AbstractSignTileEntity;
 import com.mcjty.signtastic.setup.Config;
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Matrix4f;
+import com.mojang.math.Vector3f;
 import mcjty.lib.client.CustomRenderTypes;
-import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.texture.AtlasTexture;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Matrix4f;
-import net.minecraft.util.math.vector.Vector3f;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
 import javax.annotation.Nullable;
 
-public class SignRenderer extends TileEntityRenderer<AbstractSignTileEntity> {
+public class SignRenderer implements BlockEntityRenderer<AbstractSignTileEntity> {
 
     public static final ResourceLocation SIGNS = new ResourceLocation(SignTastic.MODID, "varia/signs");
 
-    public SignRenderer(TileEntityRendererDispatcher dispatcher) {
-        super(dispatcher);
+    public SignRenderer(BlockEntityRendererProvider.Context dispatcher) {
+        super();
     }
 
     @Override
-    public void render(AbstractSignTileEntity tileEntity, float v, MatrixStack matrixStack, IRenderTypeBuffer buffer, int packedLightIn, int packedOverlayIn) {
-        renderInternal(tileEntity, matrixStack, buffer, packedLightIn, packedOverlayIn);
+    public void render(AbstractSignTileEntity pBlockEntity, float pPartialTick, PoseStack pPoseStack, MultiBufferSource buffer, int packedLightIn, int packedOverlayIn) {
+        renderInternal(pBlockEntity, pPoseStack, buffer, packedLightIn, packedOverlayIn);
     }
 
-    public static void renderInternal(AbstractSignTileEntity tileEntity, MatrixStack matrixStack, IRenderTypeBuffer buffer, int packedLightIn, int packedOverlayIn) {
+    public static void renderInternal(AbstractSignTileEntity tileEntity, PoseStack matrixStack, MultiBufferSource buffer, int packedLightIn, int packedOverlayIn) {
         float xRotation = 0.0F, yRotation = 0.0F;
 
-        Direction facing = Direction.SOUTH, horizontalFacing = Direction.SOUTH;
+        Direction facing, horizontalFacing;
         BlockState state = Minecraft.getInstance().level.getBlockState(tileEntity.getBlockPos());
         if (state.getBlock() instanceof AbstractSignBlock) {
             facing = state.getValue(BlockStateProperties.FACING);
@@ -56,21 +56,13 @@ public class SignRenderer extends TileEntityRenderer<AbstractSignTileEntity> {
         matrixStack.pushPose();
 
         switch (horizontalFacing) {
-            case NORTH:
-                yRotation = -180.0F;
-                break;
-            case WEST:
-                yRotation = -90.0F;
-                break;
-            case EAST:
-                yRotation = 90.0F;
+            case NORTH -> yRotation = -180.0F;
+            case WEST -> yRotation = -90.0F;
+            case EAST -> yRotation = 90.0F;
         }
         switch (facing) {
-            case DOWN:
-                xRotation = 90.0F;
-                break;
-            case UP:
-                xRotation = -90.0F;
+            case DOWN -> xRotation = 90.0F;
+            case UP -> xRotation = -90.0F;
         }
 
         matrixStack.translate(0.5F, 0.5F, 0.5F);
@@ -90,20 +82,20 @@ public class SignRenderer extends TileEntityRenderer<AbstractSignTileEntity> {
             renderImage(tileEntity, matrixStack, buffer, settings.isBright() ? 0xf000f0 : packedLightIn, settings.getIconIndex());
         }
 
-        FontRenderer fontrenderer = Minecraft.getInstance().font;
+        Font fontrenderer = Minecraft.getInstance().font;
         renderText(matrixStack, buffer, fontrenderer, tileEntity, settings.isLarge(), packedLightIn);
 
         matrixStack.popPose();
     }
 
-    private static void renderImage(AbstractSignTileEntity tileEntity, MatrixStack matrixStack, IRenderTypeBuffer buffer, int packedLightIn,
+    private static void renderImage(AbstractSignTileEntity tileEntity, PoseStack matrixStack, MultiBufferSource buffer, int packedLightIn,
                                     int idx) {
         int cols = Config.HORIZONTAL_ICONS.get();
         int rows = Config.VERTICAL_ICONS.get();
         matrixStack.pushPose();
         matrixStack.scale(1, -1, -1);
-        TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(AtlasTexture.LOCATION_BLOCKS).apply(SIGNS);
-        IVertexBuilder builder = buffer.getBuffer(RenderType.cutout());
+        TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(SIGNS);
+        VertexConsumer builder = buffer.getBuffer(RenderType.cutout());
         Matrix4f matrix = matrixStack.last().pose();
         float dim = .46f;
         float offs = -0.01f - tileEntity.getRenderOffset();
@@ -131,7 +123,7 @@ public class SignRenderer extends TileEntityRenderer<AbstractSignTileEntity> {
         matrixStack.popPose();
     }
 
-    private static void renderText(MatrixStack matrixStack, IRenderTypeBuffer buffer, FontRenderer fontrenderer, AbstractSignTileEntity tileEntity, boolean large, int lightmapValue) {
+    private static void renderText(PoseStack matrixStack, MultiBufferSource buffer, Font fontrenderer, AbstractSignTileEntity tileEntity, boolean large, int lightmapValue) {
         SignSettings settings = tileEntity.getSettings();
         float factor = 2.0f + (large ? 2 : 0);
         int currenty = 9 - (large ? 4 : 0);
@@ -159,7 +151,7 @@ public class SignRenderer extends TileEntityRenderer<AbstractSignTileEntity> {
     }
 
 
-    private static void renderScreenBoard(MatrixStack matrixStack, @Nullable IRenderTypeBuffer buffer,
+    private static void renderScreenBoard(PoseStack matrixStack, @Nullable MultiBufferSource buffer,
                                           TextureType textureType, float renderOffset,
                                           Integer color, int packedLight) {
         matrixStack.pushPose();
@@ -167,11 +159,11 @@ public class SignRenderer extends TileEntityRenderer<AbstractSignTileEntity> {
 
         Matrix4f matrix = matrixStack.last().pose();
 
-        TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(AtlasTexture.LOCATION_BLOCKS).apply(
+        TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(
                 textureType.getId()
         );
 
-        IVertexBuilder builder = buffer.getBuffer(RenderType.solid());
+        VertexConsumer builder = buffer.getBuffer(RenderType.solid());
 
         float dim = .46f;
         float zback = .05f;
@@ -237,14 +229,13 @@ public class SignRenderer extends TileEntityRenderer<AbstractSignTileEntity> {
     }
 
     public static void register() {
-        ClientRegistry.bindTileEntityRenderer(SignsModule.TYPE_SQUARE_SIGN.get(), SignRenderer::new);
-        ClientRegistry.bindTileEntityRenderer(SignsModule.TYPE_BLOCK_SIGN.get(), SignRenderer::new);
-        ClientRegistry.bindTileEntityRenderer(SignsModule.TYPE_SLAB_SIGN.get(), SignRenderer::new);
+        BlockEntityRenderers.register(SignsModule.TYPE_SQUARE_SIGN.get(), SignRenderer::new);
+        BlockEntityRenderers.register(SignsModule.TYPE_BLOCK_SIGN.get(), SignRenderer::new);
+        BlockEntityRenderers.register(SignsModule.TYPE_SLAB_SIGN.get(), SignRenderer::new);
     }
 
-    public static void vt(IVertexBuilder renderer, Matrix4f matrix, float x, float y, float z, float u, float v,
+    public static void vt(VertexConsumer renderer, Matrix4f matrix, float x, float y, float z, float u, float v,
                           int packedLight) {
         renderer.vertex(matrix, x, y, z).color(1f, 1f, 1f, 1f).uv(u, v).uv2(packedLight).normal(1.0F, 0.0F, 0.0F).endVertex();
     }
-
 }
