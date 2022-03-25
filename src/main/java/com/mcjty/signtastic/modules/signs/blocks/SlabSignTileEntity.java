@@ -1,11 +1,13 @@
 package com.mcjty.signtastic.modules.signs.blocks;
 
 import com.mcjty.signtastic.modules.signs.SignsModule;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class SlabSignTileEntity extends AbstractSignTileEntity {
 
-    public SlabSignTileEntity() {
-        super(SignsModule.TYPE_SLAB_SIGN.get());
+    public SlabSignTileEntity(BlockPos pos, BlockState state) {
+        super(SignsModule.TYPE_SLAB_SIGN.get(), pos, state);
     }
 
     @Override

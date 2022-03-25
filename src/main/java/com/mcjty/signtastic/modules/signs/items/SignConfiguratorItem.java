@@ -5,26 +5,28 @@ import com.mcjty.signtastic.modules.signs.SignSettings;
 import com.mcjty.signtastic.modules.signs.blocks.AbstractSignTileEntity;
 import mcjty.lib.builder.TooltipBuilder;
 import mcjty.lib.tooltips.ITooltipSettings;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Util;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.World;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.Util;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.ChatFormatting;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.util.Lazy;
 
 import java.util.List;
 
 import static mcjty.lib.builder.TooltipBuilder.*;
+
+import net.minecraft.world.item.Item.Properties;
 
 public class SignConfiguratorItem extends Item implements ITooltipSettings {
 
@@ -39,44 +41,44 @@ public class SignConfiguratorItem extends Item implements ITooltipSettings {
     }
 
     @Override
-    public void appendHoverText(ItemStack itemStack, World world, List<ITextComponent> list, ITooltipFlag flags) {
+    public void appendHoverText(ItemStack itemStack, Level world, List<Component> list, TooltipFlag flags) {
         super.appendHoverText(itemStack, world, list, flags);
         tooltipBuilder.get().makeTooltip(getRegistryName(), itemStack, list, flags);
     }
 
     @Override
-    public boolean doesSneakBypassUse(ItemStack stack, IWorldReader world, BlockPos pos, PlayerEntity player) {
+    public boolean doesSneakBypassUse(ItemStack stack, LevelReader world, BlockPos pos, Player player) {
         return super.doesSneakBypassUse(stack, world, pos, player);
     }
 
     @Override
-    public ActionResultType useOn(ItemUseContext context) {
-        World level = context.getLevel();
+    public InteractionResult useOn(UseOnContext context) {
+        Level level = context.getLevel();
         if (!level.isClientSide()) {
             BlockPos pos = context.getClickedPos();
-            TileEntity blockEntity = level.getBlockEntity(pos);
+            BlockEntity blockEntity = level.getBlockEntity(pos);
             if (blockEntity instanceof AbstractSignTileEntity) {
                 AbstractSignTileEntity sign = (AbstractSignTileEntity) blockEntity;
                 if (context.getPlayer().isCrouching()) {
-                    CompoundNBT tag = context.getItemInHand().getTag();
+                    CompoundTag tag = context.getItemInHand().getTag();
                     if (tag == null || !tag.contains("settings")) {
-                        context.getPlayer().sendMessage(new StringTextComponent("There are no copied settings!").withStyle(TextFormatting.RED), Util.NIL_UUID);
+                        context.getPlayer().sendMessage(new TextComponent("There are no copied settings!").withStyle(ChatFormatting.RED), Util.NIL_UUID);
                     } else {
-                        context.getPlayer().sendMessage(new StringTextComponent("Pasted settings to sign!").withStyle(TextFormatting.GREEN), Util.NIL_UUID);
-                        CompoundNBT settingsTag = tag.getCompound("settings");
+                        context.getPlayer().sendMessage(new TextComponent("Pasted settings to sign!").withStyle(ChatFormatting.GREEN), Util.NIL_UUID);
+                        CompoundTag settingsTag = tag.getCompound("settings");
                         sign.getSettings().read(settingsTag);
                         sign.markDirtyClient();
                     }
                 } else {
                     // Copy
                     SignSettings settings = sign.getSettings();
-                    CompoundNBT tag = new CompoundNBT();
+                    CompoundTag tag = new CompoundTag();
                     settings.write(tag);
                     context.getItemInHand().getOrCreateTag().put("settings", tag);
-                    context.getPlayer().sendMessage(new StringTextComponent("Copied settings from sign!").withStyle(TextFormatting.GREEN), Util.NIL_UUID);
+                    context.getPlayer().sendMessage(new TextComponent("Copied settings from sign!").withStyle(ChatFormatting.GREEN), Util.NIL_UUID);
                 }
             }
         }
-        return ActionResultType.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 }

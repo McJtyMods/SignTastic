@@ -2,10 +2,10 @@ package com.mcjty.signtastic.modules.signs.network;
 
 import com.mcjty.signtastic.modules.signs.TextureType;
 import com.mcjty.signtastic.modules.signs.blocks.AbstractSignTileEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +37,7 @@ public class PacketUpdateSignData {
         this.imageIndex = imageIndex;
     }
 
-    public PacketUpdateSignData(PacketBuffer buf) {
+    public PacketUpdateSignData(FriendlyByteBuf buf) {
         pos = buf.readBlockPos();
         if (buf.readBoolean()) {
             backColor = buf.readInt();
@@ -57,7 +57,7 @@ public class PacketUpdateSignData {
         }
     }
 
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         buf.writeBlockPos(pos);
         if (backColor != null) {
             buf.writeBoolean(true);
@@ -78,9 +78,8 @@ public class PacketUpdateSignData {
     public boolean handle(Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context ctx = supplier.get();
         ctx.enqueueWork(() -> {
-            TileEntity te = ctx.getSender().getLevel().getBlockEntity(pos);
-            if (te instanceof AbstractSignTileEntity) {
-                AbstractSignTileEntity sign = (AbstractSignTileEntity) te;
+            BlockEntity te = ctx.getSender().getLevel().getBlockEntity(pos);
+            if (te instanceof AbstractSignTileEntity sign) {
                 sign.setLines(lines);
                 sign.setBackColor(backColor);
                 sign.setTextColor(textColor);

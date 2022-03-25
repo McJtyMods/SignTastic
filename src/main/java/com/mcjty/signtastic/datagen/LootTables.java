@@ -12,9 +12,9 @@ public class LootTables extends BaseLootTableProvider {
 
     @Override
     protected void addTables() {
-        addStandardTable(SignsModule.SQUARE_SIGN.get());
-        addStandardTable(SignsModule.BLOCK_SIGN.get());
-        addStandardTable(SignsModule.SLAB_SIGN.get());
+        addStandardTable(SignsModule.SQUARE_SIGN.get(), SignsModule.TYPE_SQUARE_SIGN.get());
+        addStandardTable(SignsModule.BLOCK_SIGN.get(), SignsModule.TYPE_BLOCK_SIGN.get());
+        addStandardTable(SignsModule.SLAB_SIGN.get(), SignsModule.TYPE_SLAB_SIGN.get());
     }
 
     @Override

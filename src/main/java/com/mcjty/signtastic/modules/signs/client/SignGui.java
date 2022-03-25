@@ -8,14 +8,14 @@ import com.mcjty.signtastic.modules.signs.blocks.AbstractSignTileEntity;
 import com.mcjty.signtastic.modules.signs.network.PacketUpdateSignData;
 import com.mcjty.signtastic.setup.Config;
 import com.mcjty.signtastic.setup.Messages;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import mcjty.lib.container.GenericContainer;
 import mcjty.lib.gui.GenericGuiContainer;
 import mcjty.lib.gui.ManualEntry;
 import mcjty.lib.gui.Window;
 import mcjty.lib.gui.widgets.*;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.Arrays;
 import java.util.List;
@@ -38,7 +38,7 @@ public class SignGui extends GenericGuiContainer<AbstractSignTileEntity, Generic
     private ChoiceLabel textureTypeLabel;
     private ImageChoiceLabel imageLabel;
 
-    public SignGui(AbstractSignTileEntity tileEntity, GenericContainer container, PlayerInventory inventory) {
+    public SignGui(AbstractSignTileEntity tileEntity, GenericContainer container, Inventory inventory) {
         super(tileEntity, container, inventory, ManualEntry.EMPTY);
 
         imageWidth = WIDTH;
@@ -147,7 +147,7 @@ public class SignGui extends GenericGuiContainer<AbstractSignTileEntity, Generic
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int xSize_lo, int ySize_lo, float par3) {
+    public void render(PoseStack matrixStack, int xSize_lo, int ySize_lo, float par3) {
         super.render(matrixStack, xSize_lo, ySize_lo, par3);
         backColorSelector.enabled(backColorButton.isPressed());
         drawWindow(matrixStack);

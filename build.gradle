@@ -17,6 +17,7 @@ apply plugin: 'org.parchmentmc.librarian.forgegradle'
 apply plugin: 'eclipse'
 apply plugin: 'com.matthewprenger.cursegradle'
 apply plugin: 'maven-publish'
+apply from: 'https://raw.githubusercontent.com/SizableShrimp/Forge-Class-Remapper/main/classremapper.gradle' 
 
 repositories {
     maven { // JEI
@@ -34,10 +35,10 @@ repositories {
 group = 'com.mcjty.signtastic' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'signtastic'
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 minecraft {
-    mappings channel: 'parchment', version: "2021.10.03-1.16.5"
+    mappings channel: 'parchment', version: "2022.03.13-1.18.2"
     runs {
         client {
             workingDirectory project.file('run')
@@ -103,9 +104,13 @@ dependencies {
     compileOnly fg.deobf("mezz.jei:jei-${jei_version}:api")
     runtimeOnly fg.deobf("mezz.jei:jei-${jei_version}")
 
-    implementation fg.deobf(project.dependencies.create("mcjty.theoneprobe:TheOneProbe-${top_version}") {
-        transitive = false
-    })
+    if (findProject(':TheOneProbe') != null) {
+        implementation project(':TheOneProbe')
+    } else {
+        implementation fg.deobf(project.dependencies.create("mcjty.theoneprobe:theoneprobe:${top_version}") {
+            transitive = false
+        })
+    }
     if (findProject(':McJtyLib') != null) {
         compile project(':McJtyLib')
     } else {

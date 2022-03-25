@@ -3,9 +3,9 @@ package com.mcjty.signtastic.datagen;
 import com.mcjty.signtastic.modules.signs.SignsModule;
 import mcjty.lib.datagen.BaseRecipeProvider;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.IFinishedRecipe;
-import net.minecraft.data.ShapedRecipeBuilder;
-import net.minecraft.item.Items;
+import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.world.item.Items;
 import net.minecraft.tags.ItemTags;
 
 import java.util.function.Consumer;
@@ -17,7 +17,7 @@ public class Recipes extends BaseRecipeProvider {
     }
 
     @Override
-    protected void buildShapelessRecipes(Consumer<IFinishedRecipe> consumer) {
+    protected void buildCraftingRecipes(Consumer<FinishedRecipe> consumer) {
         build(consumer, ShapedRecipeBuilder.shaped(SignsModule.SQUARE_SIGN.get())
                         .define('S', ItemTags.SIGNS)
                         .unlockedBy("paper", has(Items.PAPER)),

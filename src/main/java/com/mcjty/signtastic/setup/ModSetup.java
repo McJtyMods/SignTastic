@@ -2,7 +2,7 @@ package com.mcjty.signtastic.setup;
 
 import com.mcjty.signtastic.modules.signs.SignsModule;
 import mcjty.lib.setup.DefaultModSetup;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 

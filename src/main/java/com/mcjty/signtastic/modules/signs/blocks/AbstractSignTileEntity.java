@@ -8,14 +8,15 @@ import mcjty.lib.container.GenericContainer;
 import mcjty.lib.tileentity.Cap;
 import mcjty.lib.tileentity.CapType;
 import mcjty.lib.tileentity.GenericTileEntity;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.nbt.StringNBT;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.util.LazyOptional;
 
 import java.util.ArrayList;
@@ -28,12 +29,12 @@ public abstract class AbstractSignTileEntity extends GenericTileEntity {
     private List<String> lines = new ArrayList<>();
 
     @Cap(type = CapType.CONTAINER)
-    private final LazyOptional<INamedContainerProvider> screenHandler = LazyOptional.of(() -> new DefaultContainerProvider<GenericContainer>("Builder")
+    private final LazyOptional<MenuProvider> screenHandler = LazyOptional.of(() -> new DefaultContainerProvider<GenericContainer>("Builder")
             .containerSupplier(DefaultContainerProvider.empty(SignsModule.CONTAINER_SIGN, this))
     );
 
-    public AbstractSignTileEntity(TileEntityType<?> type) {
-        super(type);
+    public AbstractSignTileEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
     }
 
     public void setLines(List<String> lines) {
@@ -50,46 +51,46 @@ public abstract class AbstractSignTileEntity extends GenericTileEntity {
     public abstract float getRenderOffset();
 
     @Override
-    public AxisAlignedBB getRenderBoundingBox() {
+    public AABB getRenderBoundingBox() {
         int xCoord = getBlockPos().getX();
         int yCoord = getBlockPos().getY();
         int zCoord = getBlockPos().getZ();
         int size = 1;
-        return new AxisAlignedBB(xCoord - size - 1, yCoord - size - 1, zCoord - size - 1, xCoord + size + 1, yCoord + size + 1, zCoord + size + 1); // TODO see if we can shrink this
+        return new AABB(xCoord - size - 1, yCoord - size - 1, zCoord - size - 1, xCoord + size + 1, yCoord + size + 1, zCoord + size + 1); // TODO see if we can shrink this
     }
 
     @Override
-    public void loadClientDataFromNBT(CompoundNBT tagCompound) {
+    public void loadClientDataFromNBT(CompoundTag tagCompound) {
         if (tagCompound.contains("Info")) {
-            CompoundNBT info = tagCompound.getCompound("Info");
+            CompoundTag info = tagCompound.getCompound("Info");
             settings.read(info);
-            ListNBT linesTag = info.getList("lines", Constants.NBT.TAG_STRING);
+            ListTag linesTag = info.getList("lines", Tag.TAG_STRING);
             lines.clear();
-            for (INBT tag : linesTag) {
+            for (Tag tag : linesTag) {
                 lines.add(tag.getAsString());
             }
         }
     }
 
     @Override
-    public void saveClientDataToNBT(CompoundNBT tagCompound) {
-        CompoundNBT info = getOrCreateInfo(tagCompound);
+    public void saveClientDataToNBT(CompoundTag tagCompound) {
+        CompoundTag info = getOrCreateInfo(tagCompound);
         settings.write(info);
-        ListNBT linesTag = new ListNBT();
+        ListTag linesTag = new ListTag();
         for (String line : lines) {
-            linesTag.add(StringNBT.valueOf(line));
+            linesTag.add(StringTag.valueOf(line));
         }
         info.put("lines", linesTag);
     }
 
     @Override
-    protected void loadInfo(CompoundNBT tagCompound) {
+    protected void loadInfo(CompoundTag tagCompound) {
         super.loadInfo(tagCompound);
         loadClientDataFromNBT(tagCompound);
     }
 
     @Override
-    protected void saveInfo(CompoundNBT tagCompound) {
+    protected void saveInfo(CompoundTag tagCompound) {
         super.saveInfo(tagCompound);
         saveClientDataToNBT(tagCompound);
     }
