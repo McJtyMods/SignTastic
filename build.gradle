@@ -38,7 +38,8 @@ archivesBaseName = 'signtastic'
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 minecraft {
-    mappings channel: 'parchment', version: "2022.03.13-1.18.2"
+    //mappings channel: 'parchment', version: "2022.03.13-1.18.2"
+    mappings channel: 'official', version: "1.19"
     runs {
         client {
             workingDirectory project.file('run')
@@ -101,8 +102,11 @@ sourceSets.main.resources {
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
-    compileOnly fg.deobf("mezz.jei:jei-${jei_version}:api")
-    runtimeOnly fg.deobf("mezz.jei:jei-${jei_version}")
+    // compile against the JEI API but do not include it at runtime
+    compileOnly fg.deobf("mezz.jei:jei-1.19-common-api:${jei_version}")
+    compileOnly fg.deobf("mezz.jei:jei-1.19-forge-api:${jei_version}")
+    // at runtime, use the full JEI jar for Forge
+    runtimeOnly fg.deobf("mezz.jei:jei-1.19-forge:${jei_version}")
 
     if (findProject(':TheOneProbe') != null) {
         implementation project(':TheOneProbe')

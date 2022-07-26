@@ -15,7 +15,7 @@ public class ForgeEventHandlers {
     public void onPlayerInteract(PlayerInteractEvent.RightClickBlock event) {
         if (event.getItemStack().getItem() instanceof SignConfiguratorItem) {
             BlockPos pos = event.getHitVec().getBlockPos();
-            Level world = event.getWorld();
+            Level world = event.getLevel();
             BlockEntity blockEntity = world.getBlockEntity(pos);
             if (blockEntity instanceof AbstractSignTileEntity) {
                 event.setUseBlock(Event.Result.DENY);

@@ -5,28 +5,26 @@ import com.mcjty.signtastic.modules.signs.SignSettings;
 import com.mcjty.signtastic.modules.signs.blocks.AbstractSignTileEntity;
 import mcjty.lib.builder.TooltipBuilder;
 import mcjty.lib.tooltips.ITooltipSettings;
-import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.Util;
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.ChatFormatting;
-import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.util.Lazy;
+import net.minecraftforge.registries.ForgeRegistries;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 import static mcjty.lib.builder.TooltipBuilder.*;
-
-import net.minecraft.world.item.Item.Properties;
 
 public class SignConfiguratorItem extends Item implements ITooltipSettings {
 
@@ -43,7 +41,7 @@ public class SignConfiguratorItem extends Item implements ITooltipSettings {
     @Override
     public void appendHoverText(ItemStack itemStack, Level world, List<Component> list, TooltipFlag flags) {
         super.appendHoverText(itemStack, world, list, flags);
-        tooltipBuilder.get().makeTooltip(getRegistryName(), itemStack, list, flags);
+        tooltipBuilder.get().makeTooltip(ForgeRegistries.ITEMS.getKey(this), itemStack, list, flags);
     }
 
     @Override
@@ -52,6 +50,7 @@ public class SignConfiguratorItem extends Item implements ITooltipSettings {
     }
 
     @Override
+    @Nonnull
     public InteractionResult useOn(UseOnContext context) {
         Level level = context.getLevel();
         if (!level.isClientSide()) {
@@ -62,9 +61,9 @@ public class SignConfiguratorItem extends Item implements ITooltipSettings {
                 if (context.getPlayer().isCrouching()) {
                     CompoundTag tag = context.getItemInHand().getTag();
                     if (tag == null || !tag.contains("settings")) {
-                        context.getPlayer().sendMessage(new TextComponent("There are no copied settings!").withStyle(ChatFormatting.RED), Util.NIL_UUID);
+                        context.getPlayer().sendSystemMessage(Component.literal("There are no copied settings!").withStyle(ChatFormatting.RED));
                     } else {
-                        context.getPlayer().sendMessage(new TextComponent("Pasted settings to sign!").withStyle(ChatFormatting.GREEN), Util.NIL_UUID);
+                        context.getPlayer().sendSystemMessage(Component.literal("Pasted settings to sign!").withStyle(ChatFormatting.GREEN));
                         CompoundTag settingsTag = tag.getCompound("settings");
                         sign.getSettings().read(settingsTag);
                         sign.markDirtyClient();
@@ -75,7 +74,7 @@ public class SignConfiguratorItem extends Item implements ITooltipSettings {
                     CompoundTag tag = new CompoundTag();
                     settings.write(tag);
                     context.getItemInHand().getOrCreateTag().put("settings", tag);
-                    context.getPlayer().sendMessage(new TextComponent("Copied settings from sign!").withStyle(ChatFormatting.GREEN), Util.NIL_UUID);
+                    context.getPlayer().sendSystemMessage(Component.literal("Copied settings from sign!").withStyle(ChatFormatting.GREEN));
                 }
             }
         }
