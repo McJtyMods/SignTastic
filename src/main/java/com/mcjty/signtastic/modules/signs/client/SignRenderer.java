@@ -10,8 +10,8 @@ import com.mcjty.signtastic.setup.Config;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
 import mcjty.lib.client.CustomRenderTypes;
+import mcjty.lib.client.RenderHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -40,10 +40,9 @@ public class SignRenderer implements BlockEntityRenderer<AbstractSignTileEntity>
         renderInternal(tileEntity, matrixStack, buffer, packedLightIn, packedOverlayIn);
     }
 
+    // @todo 1.19.3
     public static void renderInternal(AbstractSignTileEntity tileEntity, PoseStack matrixStack, MultiBufferSource buffer, int packedLightIn, int packedOverlayIn) {
-        float xRotation = 0.0F, yRotation = 0.0F;
-
-        Direction facing = Direction.SOUTH, horizontalFacing = Direction.SOUTH;
+        Direction facing, horizontalFacing;
         BlockState state = Minecraft.getInstance().level.getBlockState(tileEntity.getBlockPos());
         if (state.getBlock() instanceof AbstractSignBlock) {
             facing = state.getValue(BlockStateProperties.FACING);
@@ -54,19 +53,21 @@ public class SignRenderer implements BlockEntityRenderer<AbstractSignTileEntity>
 
         matrixStack.pushPose();
 
-        switch (horizontalFacing) {
-            case NORTH -> yRotation = -180.0F;
-            case WEST -> yRotation = -90.0F;
-            case EAST -> yRotation = 90.0F;
-        }
-        switch (facing) {
-            case DOWN -> xRotation = 90.0F;
-            case UP -> xRotation = -90.0F;
-        }
+        float yRotation = switch (horizontalFacing) {
+            case NORTH -> -180.0F;
+            case WEST -> -90.0F;
+            case EAST -> 90.0F;
+            default -> 0;
+        };
+        float xRotation = switch (facing) {
+            case DOWN -> 90.0F;
+            case UP -> -90.0F;
+            default -> 0;
+        };
 
         matrixStack.translate(0.5F, 0.5F, 0.5F);
-        matrixStack.mulPose(Vector3f.YP.rotationDegrees(yRotation));
-        matrixStack.mulPose(Vector3f.XP.rotationDegrees(xRotation));
+        RenderHelper.rotateYP(matrixStack, yRotation);
+        RenderHelper.rotateXP(matrixStack, xRotation);
         matrixStack.translate(0.0F, 0.0F, -0.4375F);
 
         SignSettings settings = tileEntity.getSettings();
