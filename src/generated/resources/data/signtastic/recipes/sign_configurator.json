@@ -1,10 +1,5 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "S  ",
-    " i ",
-    "  i"
-  ],
   "key": {
     "S": {
       "item": "signtastic:square_sign"
@@ -13,6 +8,11 @@
       "tag": "forge:ingots/iron"
     }
   },
+  "pattern": [
+    "S  ",
+    " i ",
+    "  i"
+  ],
   "result": {
     "item": "signtastic:sign_configurator"
   }

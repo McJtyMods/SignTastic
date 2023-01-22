@@ -1,21 +1,21 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "   ",
-    "PSP",
-    "pPp"
-  ],
   "key": {
-    "S": {
-      "tag": "minecraft:signs"
-    },
     "P": {
       "tag": "minecraft:planks"
+    },
+    "S": {
+      "tag": "minecraft:signs"
     },
     "p": {
       "item": "minecraft:paper"
     }
   },
+  "pattern": [
+    "   ",
+    "PSP",
+    "pPp"
+  ],
   "result": {
     "item": "signtastic:slab_sign"
   }

@@ -1,27 +1,96 @@
 {
   "variants": {
-    "facing=down": {
+    "facing=down,horizfacing=east": {
       "model": "signtastic:block/square_sign",
       "x": 90
     },
-    "facing=up": {
+    "facing=down,horizfacing=north": {
       "model": "signtastic:block/square_sign",
-      "x": -90
+      "x": 90
     },
-    "facing=north": {
+    "facing=down,horizfacing=south": {
+      "model": "signtastic:block/square_sign",
+      "x": 90
+    },
+    "facing=down,horizfacing=west": {
+      "model": "signtastic:block/square_sign",
+      "x": 90
+    },
+    "facing=east,horizfacing=east": {
+      "model": "signtastic:block/square_sign",
+      "y": 90
+    },
+    "facing=east,horizfacing=north": {
+      "model": "signtastic:block/square_sign",
+      "y": 90
+    },
+    "facing=east,horizfacing=south": {
+      "model": "signtastic:block/square_sign",
+      "y": 90
+    },
+    "facing=east,horizfacing=west": {
+      "model": "signtastic:block/square_sign",
+      "y": 90
+    },
+    "facing=north,horizfacing=east": {
       "model": "signtastic:block/square_sign"
     },
-    "facing=south": {
+    "facing=north,horizfacing=north": {
+      "model": "signtastic:block/square_sign"
+    },
+    "facing=north,horizfacing=south": {
+      "model": "signtastic:block/square_sign"
+    },
+    "facing=north,horizfacing=west": {
+      "model": "signtastic:block/square_sign"
+    },
+    "facing=south,horizfacing=east": {
       "model": "signtastic:block/square_sign",
       "y": 180
     },
-    "facing=west": {
+    "facing=south,horizfacing=north": {
+      "model": "signtastic:block/square_sign",
+      "y": 180
+    },
+    "facing=south,horizfacing=south": {
+      "model": "signtastic:block/square_sign",
+      "y": 180
+    },
+    "facing=south,horizfacing=west": {
+      "model": "signtastic:block/square_sign",
+      "y": 180
+    },
+    "facing=up,horizfacing=east": {
+      "model": "signtastic:block/square_sign",
+      "x": -90
+    },
+    "facing=up,horizfacing=north": {
+      "model": "signtastic:block/square_sign",
+      "x": -90
+    },
+    "facing=up,horizfacing=south": {
+      "model": "signtastic:block/square_sign",
+      "x": -90
+    },
+    "facing=up,horizfacing=west": {
+      "model": "signtastic:block/square_sign",
+      "x": -90
+    },
+    "facing=west,horizfacing=east": {
       "model": "signtastic:block/square_sign",
       "y": 270
     },
-    "facing=east": {
+    "facing=west,horizfacing=north": {
       "model": "signtastic:block/square_sign",
-      "y": 90
+      "y": 270
+    },
+    "facing=west,horizfacing=south": {
+      "model": "signtastic:block/square_sign",
+      "y": 270
+    },
+    "facing=west,horizfacing=west": {
+      "model": "signtastic:block/square_sign",
+      "y": 270
     }
   }
 }
