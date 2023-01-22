@@ -9,7 +9,7 @@ import mcjty.lib.container.GenericContainer;
 import mcjty.lib.datagen.DataGen;
 import mcjty.lib.datagen.Dob;
 import mcjty.lib.modules.IModule;
-import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import mcjty.lib.varia.ClientTools;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
@@ -47,7 +47,7 @@ public class SignsModule implements IModule {
 
     public SignsModule() {
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
-            FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::onTextureStitch);
+            ClientTools.onTextureStitch(FMLJavaModLoadingContext.get().getModEventBus(), ClientSetup::onTextureStitch);
         });
     }
 
@@ -76,7 +76,7 @@ public class SignsModule implements IModule {
                         .parentedItem("block/square_sign")
                         .standardLoot(TYPE_SQUARE_SIGN)
                         .blockState(p -> p.orientedBlock(SQUARE_SIGN.get(), DataGenHelper.screenModel(p, "square_sign", p.modLoc("block/screenframe_icon"), 13)))
-                        .shaped(builder -> builder.shaped(SQUARE_SIGN.get())
+                        .shaped(builder -> builder
                                         .define('S', ItemTags.SIGNS)
                                         .unlockedBy("paper", has(Items.PAPER)),
                                 "ppp", "pSp", "ppp"),
@@ -84,7 +84,7 @@ public class SignsModule implements IModule {
                         .parentedItem("block/block_sign")
                         .standardLoot(TYPE_BLOCK_SIGN)
                         .blockState(p -> p.orientedBlock(BLOCK_SIGN.get(), DataGenHelper.screenModel(p, "block_sign", p.modLoc("block/screenframe_icon"), 0)))
-                        .shaped(builder -> builder.shaped(BLOCK_SIGN.get())
+                        .shaped(builder -> builder
                                         .define('S', ItemTags.SIGNS)
                                         .define('P', ItemTags.PLANKS)
                                         .unlockedBy("paper", has(Items.PAPER)),
@@ -93,14 +93,14 @@ public class SignsModule implements IModule {
                         .parentedItem("block/slab_sign")
                         .standardLoot(TYPE_SLAB_SIGN)
                         .blockState(p -> p.orientedBlock(SLAB_SIGN.get(), DataGenHelper.screenModel(p, "slab_sign", p.modLoc("block/screenframe_icon"), 8)))
-                        .shaped(builder -> builder.shaped(SLAB_SIGN.get())
+                        .shaped(builder -> builder
                                         .define('S', ItemTags.SIGNS)
                                         .define('P', ItemTags.PLANKS)
                                         .unlockedBy("paper", has(Items.PAPER)),
                                 "   ", "PSP", "pPp"),
                 Dob.itemBuilder(SIGN_CONFIGURATOR)
                         .generatedItem("item/sign_configurator")
-                        .shaped(builder -> builder.shaped(SIGN_CONFIGURATOR.get())
+                        .shaped(builder -> builder
                                         .define('S', SQUARE_SIGN.get())
                                         .unlockedBy("iron", has(Items.IRON_INGOT)),
                                 "S  ", " i ", "  i")

@@ -9,7 +9,6 @@ import com.mcjty.signtastic.modules.signs.blocks.AbstractSignTileEntity;
 import com.mcjty.signtastic.setup.Config;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Matrix4f;
 import mcjty.lib.client.CustomRenderTypes;
 import mcjty.lib.client.RenderHelper;
 import net.minecraft.client.Minecraft;
@@ -96,7 +95,6 @@ public class SignRenderer implements BlockEntityRenderer<AbstractSignTileEntity>
         matrixStack.scale(1, -1, -1);
         TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(SIGNS);
         VertexConsumer builder = buffer.getBuffer(RenderType.cutout());
-        Matrix4f matrix = matrixStack.last().pose();
         float dim = .46f;
         float offs = -0.01f - tileEntity.getRenderOffset();
 
@@ -116,10 +114,10 @@ public class SignRenderer implements BlockEntityRenderer<AbstractSignTileEntity>
         v0 += sy * dv;
         v1 = v0 + dv;
 
-        vt(builder, matrix, -.46f, dim, offs, u0, v1, packedLightIn);
-        vt(builder, matrix, dim, dim, offs, u1, v1, packedLightIn);
-        vt(builder, matrix, dim, -.46f, offs, u1, v0, packedLightIn);
-        vt(builder, matrix, -.46f, -.46f, offs, u0, v0, packedLightIn);
+        RenderHelper.vt(builder, matrixStack, -.46f, dim, offs, u0, v1, packedLightIn);
+        RenderHelper.vt(builder, matrixStack, dim, dim, offs, u1, v1, packedLightIn);
+        RenderHelper.vt(builder, matrixStack, dim, -.46f, offs, u1, v0, packedLightIn);
+        RenderHelper.vt(builder, matrixStack, -.46f, -.46f, offs, u0, v0, packedLightIn);
         matrixStack.popPose();
     }
 
@@ -157,8 +155,6 @@ public class SignRenderer implements BlockEntityRenderer<AbstractSignTileEntity>
         matrixStack.pushPose();
         matrixStack.scale(1, -1, -1);
 
-        Matrix4f matrix = matrixStack.last().pose();
-
         TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(
                 textureType.getId()
         );
@@ -178,40 +174,40 @@ public class SignRenderer implements BlockEntityRenderer<AbstractSignTileEntity>
         float sv = (v1 - v0) * (.1f+renderOffset);
 
         // BACK
-        vt(builder, matrix, -ss, -ss, zback, u0, v0, packedLight);
-        vt(builder, matrix, ss, -ss, zback, u1, v0, packedLight);
-        vt(builder, matrix, ss, ss, zback, u1, v1, packedLight);
-        vt(builder, matrix, -ss, ss, zback, u0, v1, packedLight);
+        RenderHelper.vt(builder, matrixStack, -ss, -ss, zback, u0, v0, packedLight);
+        RenderHelper.vt(builder, matrixStack, ss, -ss, zback, u1, v0, packedLight);
+        RenderHelper.vt(builder, matrixStack, ss, ss, zback, u1, v1, packedLight);
+        RenderHelper.vt(builder, matrixStack, -ss, ss, zback, u0, v1, packedLight);
 
         // FRONT
-        vt(builder, matrix, -ss, ss, zfront, u0, v0, packedLight);
-        vt(builder, matrix, ss, ss, zfront, u1, v0, packedLight);
-        vt(builder, matrix, ss, -ss, zfront, u1, v1, packedLight);
-        vt(builder, matrix, -ss, -ss, zfront, u0, v1, packedLight);
+        RenderHelper.vt(builder, matrixStack, -ss, ss, zfront, u0, v0, packedLight);
+        RenderHelper.vt(builder, matrixStack, ss, ss, zfront, u1, v0, packedLight);
+        RenderHelper.vt(builder, matrixStack, ss, -ss, zfront, u1, v1, packedLight);
+        RenderHelper.vt(builder, matrixStack, -ss, -ss, zfront, u0, v1, packedLight);
 
         // DOWN
-        vt(builder, matrix, -ss, ss, zback, u0, v0, packedLight);
-        vt(builder, matrix, ss, ss, zback, u1, v0, packedLight);
-        vt(builder, matrix, ss, ss, zfront, u1, v0+sv, packedLight);
-        vt(builder, matrix, -ss, ss, zfront, u0, v0+sv, packedLight);
+        RenderHelper.vt(builder, matrixStack, -ss, ss, zback, u0, v0, packedLight);
+        RenderHelper.vt(builder, matrixStack, ss, ss, zback, u1, v0, packedLight);
+        RenderHelper.vt(builder, matrixStack, ss, ss, zfront, u1, v0+sv, packedLight);
+        RenderHelper.vt(builder, matrixStack, -ss, ss, zfront, u0, v0+sv, packedLight);
 
         // UP
-        vt(builder, matrix, -ss, -ss, zfront, u0, v0, packedLight);
-        vt(builder, matrix, ss, -ss, zfront, u1, v0, packedLight);
-        vt(builder, matrix, ss, -ss, zback, u1, v0+sv, packedLight);
-        vt(builder, matrix, -ss, -ss, zback, u0, v0+sv, packedLight);
+        RenderHelper.vt(builder, matrixStack, -ss, -ss, zfront, u0, v0, packedLight);
+        RenderHelper.vt(builder, matrixStack, ss, -ss, zfront, u1, v0, packedLight);
+        RenderHelper.vt(builder, matrixStack, ss, -ss, zback, u1, v0+sv, packedLight);
+        RenderHelper.vt(builder, matrixStack, -ss, -ss, zback, u0, v0+sv, packedLight);
 
         // LEFT
-        vt(builder, matrix, -ss, -ss, zfront, u0, v0, packedLight);
-        vt(builder, matrix, -ss, -ss, zback, u0+su, v0, packedLight);
-        vt(builder, matrix, -ss, ss, zback, u0+su, v1, packedLight);
-        vt(builder, matrix, -ss, ss, zfront, u0, v1, packedLight);
+        RenderHelper.vt(builder, matrixStack, -ss, -ss, zfront, u0, v0, packedLight);
+        RenderHelper.vt(builder, matrixStack, -ss, -ss, zback, u0+su, v0, packedLight);
+        RenderHelper.vt(builder, matrixStack, -ss, ss, zback, u0+su, v1, packedLight);
+        RenderHelper.vt(builder, matrixStack, -ss, ss, zfront, u0, v1, packedLight);
 
         // RIGHT
-        vt(builder, matrix, ss, ss, zfront, u0, v0, packedLight);
-        vt(builder, matrix, ss, ss, zback, u0+su, v0, packedLight);
-        vt(builder, matrix, ss, -ss, zback, u0+su, v1, packedLight);
-        vt(builder, matrix, ss, -ss, zfront, u0, v1, packedLight);
+        RenderHelper.vt(builder, matrixStack, ss, ss, zfront, u0, v0, packedLight);
+        RenderHelper.vt(builder, matrixStack, ss, ss, zback, u0+su, v0, packedLight);
+        RenderHelper.vt(builder, matrixStack, ss, -ss, zback, u0+su, v1, packedLight);
+        RenderHelper.vt(builder, matrixStack, ss, -ss, zfront, u0, v1, packedLight);
 
 
         if (color != null) {
@@ -220,10 +216,10 @@ public class SignRenderer implements BlockEntityRenderer<AbstractSignTileEntity>
             float g = ((color & 65280) >> 8) / 255.0F;
             float b = ((color & 255)) / 255.0F;
             float offs = -0.01f - renderOffset;
-            builder.vertex(matrix, -.46f, dim, offs).color(r, g, b, 1f).uv2(packedLight).endVertex();
-            builder.vertex(matrix, dim, dim, offs).color(r, g, b, 1f).uv2(packedLight).endVertex();
-            builder.vertex(matrix, dim, -.46f, offs).color(r, g, b, 1f).uv2(packedLight).endVertex();
-            builder.vertex(matrix, -.46f, -.46f, offs).color(r, g, b, 1f).uv2(packedLight).endVertex();
+            RenderHelper.vt(builder, matrixStack, -.46f, dim, offs, r, g, b, packedLight);
+            RenderHelper.vt(builder, matrixStack, dim, dim, offs, r, g, b, packedLight);
+            RenderHelper.vt(builder, matrixStack, dim, -.46f, offs, r, g, b, packedLight);
+            RenderHelper.vt(builder, matrixStack, -.46f, -.46f, offs, r, g, b, packedLight);
         }
         matrixStack.popPose();
     }
@@ -233,10 +229,4 @@ public class SignRenderer implements BlockEntityRenderer<AbstractSignTileEntity>
         BlockEntityRenderers.register(SignsModule.TYPE_BLOCK_SIGN.get(), SignRenderer::new);
         BlockEntityRenderers.register(SignsModule.TYPE_SLAB_SIGN.get(), SignRenderer::new);
     }
-
-    public static void vt(VertexConsumer renderer, Matrix4f matrix, float x, float y, float z, float u, float v,
-                          int packedLight) {
-        renderer.vertex(matrix, x, y, z).color(1f, 1f, 1f, 1f).uv(u, v).uv2(packedLight).normal(1.0F, 0.0F, 0.0F).endVertex();
-    }
-
 }

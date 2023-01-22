@@ -33,9 +33,7 @@ public class SignConfiguratorItem extends Item implements ITooltipSettings {
             .infoShift(header(), gold());
 
     public SignConfiguratorItem() {
-        super(new Properties()
-                .stacksTo(1)
-                .tab(SignTastic.setup.getTab()));
+        super(SignTastic.setup.defaultProperties().stacksTo(1));
     }
 
     @Override

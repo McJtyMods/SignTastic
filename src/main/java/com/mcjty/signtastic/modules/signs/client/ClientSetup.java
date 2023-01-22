@@ -1,15 +1,13 @@
 package com.mcjty.signtastic.modules.signs.client;
 
-import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraftforge.client.event.TextureStitchEvent;
+import net.minecraft.resources.ResourceLocation;
+
+import java.util.Collections;
+import java.util.List;
 
 public class ClientSetup {
 
-    public static void onTextureStitch(TextureStitchEvent.Pre event) {
-        if (!event.getAtlas().location().equals(TextureAtlas.LOCATION_BLOCKS)) {
-            return;
-        }
-
-        event.addSprite(SignRenderer.SIGNS);
+    public static List<ResourceLocation> onTextureStitch() {
+        return Collections.singletonList(SignRenderer.SIGNS);
     }
 }
