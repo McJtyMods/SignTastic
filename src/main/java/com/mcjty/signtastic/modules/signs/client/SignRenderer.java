@@ -29,7 +29,7 @@ import javax.annotation.Nullable;
 
 public class SignRenderer implements BlockEntityRenderer<AbstractSignTileEntity> {
 
-    public static final ResourceLocation SIGNS = new ResourceLocation(SignTastic.MODID, "varia/signs");
+    public static final ResourceLocation SIGNS = new ResourceLocation(SignTastic.MODID, "block/signs");
 
     public SignRenderer(BlockEntityRendererProvider.Context context) {
     }
