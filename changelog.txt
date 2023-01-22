@@ -1,5 +1,5 @@
 Upcoming:
-- Update to latest McJtyLib
+- Updated to Latest McJtyLib and made compatible with 1.19.3
 - Loottable fixes
 
 1.19-2.0.0:
