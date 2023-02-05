@@ -137,7 +137,7 @@ public class SignRenderer implements BlockEntityRenderer<AbstractSignTileEntity>
             linesSupported /= 2;
         }
         for (String line : tileEntity.getLines()) {
-            fontrenderer.drawInBatch(line, 5, currenty, 0xff000000 | settings.getTextColor(), false, matrixStack.last().pose(), buffer, false, 0,
+            RenderHelper.renderText(fontrenderer, line, 5, currenty, 0xff000000 | settings.getTextColor(), matrixStack, buffer,
                     settings.isBright() ? 0xf000f0 : lightmapValue);
             currenty += 10;
             l++;
