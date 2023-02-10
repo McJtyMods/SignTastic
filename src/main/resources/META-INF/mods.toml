@@ -55,6 +55,6 @@ Signs signs and signs
 [[dependencies.signtastic]]
     modId="mcjtylib"
     mandatory=true
-    versionRange="[1.19-7.1.4,)"
+    versionRange="[1.19-7.1.5,)"
     ordering="AFTER"
     side="BOTH"
