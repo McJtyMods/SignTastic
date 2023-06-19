@@ -2,8 +2,14 @@ package com.mcjty.signtastic.setup;
 
 
 import com.mcjty.signtastic.SignTastic;
+import com.mcjty.signtastic.modules.signs.SignsModule;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -11,6 +17,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
 import static com.mcjty.signtastic.SignTastic.MODID;
 
@@ -21,6 +28,7 @@ public class Registration {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
     public static final DeferredRegister<BlockEntityType<?>> TILES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, MODID);
     public static final DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.MENU_TYPES, MODID);
+    public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
 
     public static void register() {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -28,9 +36,19 @@ public class Registration {
         ITEMS.register(bus);
         TILES.register(bus);
         CONTAINERS.register(bus);
+        TABS.register(FMLJavaModLoadingContext.get().getModEventBus());
     }
 
     public static Item.Properties createStandardProperties() {
         return SignTastic.setup.defaultProperties();
     }
+
+    public static RegistryObject<CreativeModeTab> TAB = TABS.register("signtastic", () -> CreativeModeTab.builder()
+            .title(Component.translatable("itemGroup." + MODID))
+            .icon(() -> new ItemStack(SignsModule.SQUARE_SIGN_ITEM.get()))
+            .withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
+            .displayItems((featureFlags, output) -> {
+                SignTastic.setup.populateTab(output);
+            })
+            .build());
 }
