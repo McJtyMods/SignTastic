@@ -14,6 +14,7 @@ import mcjty.lib.gui.GenericGuiContainer;
 import mcjty.lib.gui.ManualEntry;
 import mcjty.lib.gui.Window;
 import mcjty.lib.gui.widgets.*;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.resources.ResourceLocation;
 
@@ -147,10 +148,10 @@ public class SignGui extends GenericGuiContainer<AbstractSignTileEntity, Generic
     }
 
     @Override
-    public void render(PoseStack matrixStack, int xSize_lo, int ySize_lo, float par3) {
-        super.render(matrixStack, xSize_lo, ySize_lo, par3);
+    public void render(GuiGraphics graphics, int xSize_lo, int ySize_lo, float par3) {
+        super.render(graphics, xSize_lo, ySize_lo, par3);
         backColorSelector.enabled(backColorButton.isPressed());
-        drawWindow(matrixStack);
+        drawWindow(graphics);
     }
 
     public static void register() {

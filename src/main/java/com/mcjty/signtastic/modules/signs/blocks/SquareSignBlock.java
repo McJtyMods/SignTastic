@@ -9,7 +9,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -21,7 +20,7 @@ public class SquareSignBlock extends AbstractSignBlock {
 
     public SquareSignBlock(BlockEntityType.BlockEntitySupplier<BlockEntity> supplier) {
         super(new BlockBuilder()
-                .properties(Properties.of(Material.STONE).strength(1.0F).sound(SoundType.STONE).noOcclusion())
+                .properties(Properties.of().strength(1.0F).sound(SoundType.STONE).noOcclusion())
 //                .topDriver(RFToolsUtilityTOPDriver.DRIVER)
                 .info(key("message.signtastic.shiftmessage"))
                 .infoShift(header())

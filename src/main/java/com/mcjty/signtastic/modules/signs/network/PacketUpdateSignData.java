@@ -77,19 +77,17 @@ public class PacketUpdateSignData {
 
     public boolean handle(Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context ctx = supplier.get();
-        ctx.enqueueWork(() -> {
-            BlockEntity te = ctx.getSender().getLevel().getBlockEntity(pos);
-            if (te instanceof AbstractSignTileEntity sign) {
-                sign.setLines(lines);
-                sign.setBackColor(backColor);
-                sign.setTextColor(textColor);
-                sign.setBright(bright);
-                sign.setLarge(large);
-                sign.setTransparent(transparent);
-                sign.setTextureType(textureType);
-                sign.setIconIndex(imageIndex);
-            }
-        });
+        BlockEntity te = ctx.getSender().level().getBlockEntity(pos);
+        if (te instanceof AbstractSignTileEntity sign) {
+            sign.setLines(lines);
+            sign.setBackColor(backColor);
+            sign.setTextColor(textColor);
+            sign.setBright(bright);
+            sign.setLarge(large);
+            sign.setTransparent(transparent);
+            sign.setTextureType(textureType);
+            sign.setIconIndex(imageIndex);
+        }
         return true;
     }
 }

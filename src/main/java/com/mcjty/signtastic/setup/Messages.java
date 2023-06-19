@@ -36,7 +36,7 @@ public class Messages {
         net.messageBuilder(PacketUpdateSignData.class, id())
                 .encoder(PacketUpdateSignData::toBytes)
                 .decoder(PacketUpdateSignData::new)
-                .consumer(PacketUpdateSignData::handle)
+                .consumerMainThread(PacketUpdateSignData::handle)
                 .add();
 
         PacketHandler.registerStandardMessages(id(), net);
