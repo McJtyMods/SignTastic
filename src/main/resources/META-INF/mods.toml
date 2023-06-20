@@ -6,7 +6,7 @@
 # The name of the mod loader type to load - for regular FML @Mod mods it should be javafml
 modLoader="javafml" #mandatory
 # A version range to match for said mod loader - for regular FML @Mod it will be the forge version
-loaderVersion="[43,)"
+loaderVersion="[47,)"
 # The license is required now
 license="MIT License https://github.com/McJty/YouTubeModding14/blob/1.16/LICENCE"
 # A URL to refer people to when problems occur with this mod
@@ -40,7 +40,7 @@ Signs signs and signs
     # Does this dependency have to exist - if not, ordering below must be specified
     mandatory=true #mandatory
     # The version range of the dependency
-    versionRange="[43,)" #mandatory
+    versionRange="[47,)" #mandatory
     # An ordering relationship for the dependency - BEFORE or AFTER required if the relationship is not mandatory
     ordering="NONE"
     # Side this dependency is applied on - BOTH, CLIENT or SERVER
@@ -49,12 +49,12 @@ Signs signs and signs
 [[dependencies.signtastic]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.16.5,)"
+    versionRange="[1.20,)"
     ordering="NONE"
     side="BOTH"
 [[dependencies.signtastic]]
     modId="mcjtylib"
     mandatory=true
-    versionRange="[1.19-7.2.2,)"
+    versionRange="[1.20-8.0.0,)"
     ordering="AFTER"
     side="BOTH"
