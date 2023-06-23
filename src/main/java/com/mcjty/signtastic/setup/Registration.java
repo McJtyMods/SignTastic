@@ -36,7 +36,7 @@ public class Registration {
         ITEMS.register(bus);
         TILES.register(bus);
         CONTAINERS.register(bus);
-        TABS.register(FMLJavaModLoadingContext.get().getModEventBus());
+        TABS.register(bus);
     }
 
     public static Item.Properties createStandardProperties() {
