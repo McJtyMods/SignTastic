@@ -1,3 +1,6 @@
+Upcoming:
+- Fixed the sign icon not being visible in the gui
+
 1.19-2.1.2:
 - Update to 1.19.4
 

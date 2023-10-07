@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 public class SignGui extends GenericGuiContainer<AbstractSignTileEntity, GenericContainer> {
 
-    public static final ResourceLocation SIGNS_GUI = new ResourceLocation(SignTastic.MODID, "textures/varia/signs.png");
+    public static final ResourceLocation SIGNS_GUI = new ResourceLocation(SignTastic.MODID, "textures/block/signs.png");
     private static final ResourceLocation BACKGROUND = new ResourceLocation(SignTastic.MODID, "textures/gui/signgui.png");
     public static final int WIDTH = 215;
     public static final int HEIGHT = 200;
