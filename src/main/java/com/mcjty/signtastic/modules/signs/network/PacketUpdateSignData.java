@@ -1,63 +1,54 @@
 package com.mcjty.signtastic.modules.signs.network;
 
+import com.mcjty.signtastic.SignTastic;
 import com.mcjty.signtastic.modules.signs.TextureType;
 import com.mcjty.signtastic.modules.signs.blocks.AbstractSignTileEntity;
+import mcjty.lib.network.CustomPacketPayload;
+import mcjty.lib.network.PlayPayloadContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.network.NetworkEvent;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
-public class PacketUpdateSignData {
+public record PacketUpdateSignData(BlockPos pos, List<String> lines, Integer backColor, Integer textColor,
+                                   Boolean bright, Boolean transparent, Boolean large, Integer imageIndex,
+                                   TextureType textureType) implements CustomPacketPayload {
 
-    private final BlockPos pos;
-    private final Integer backColor;
-    private final int textColor;
-    private final boolean bright;
-    private final boolean transparent;
-    private final boolean large;
-    private final int imageIndex;
-    private final List<String> lines;
-    private final TextureType textureType;
+    public static final ResourceLocation ID = new ResourceLocation(SignTastic.MODID, "update_sign_data");
 
-    public PacketUpdateSignData(BlockPos pos, List<String> lines, Integer backColor, int textColor,
+    public static PacketUpdateSignData create(BlockPos pos, List<String> lines, Integer backColor, int textColor,
                                 boolean bright, boolean transparent, boolean large, TextureType textureType,
                                 int imageIndex) {
-        this.pos = pos;
-        this.lines = lines;
-        this.backColor = backColor;
-        this.textColor = textColor;
-        this.bright = bright;
-        this.large = large;
-        this.transparent = transparent;
-        this.textureType = textureType;
-        this.imageIndex = imageIndex;
+        return new PacketUpdateSignData(pos, lines, backColor, textColor, bright, transparent, large, imageIndex, textureType);
     }
 
-    public PacketUpdateSignData(FriendlyByteBuf buf) {
-        pos = buf.readBlockPos();
+    public static PacketUpdateSignData create(FriendlyByteBuf buf) {
+        BlockPos pos = buf.readBlockPos();
+        Integer backColor;
         if (buf.readBoolean()) {
             backColor = buf.readInt();
         } else {
             backColor = null;
         }
-        textColor = buf.readInt();
-        bright = buf.readBoolean();
-        transparent = buf.readBoolean();
-        large = buf.readBoolean();
-        textureType = TextureType.values()[buf.readInt()];
-        imageIndex = buf.readInt();
+        Integer textColor = buf.readInt();
+        Boolean bright = buf.readBoolean();
+        Boolean transparent = buf.readBoolean();
+        Boolean large = buf.readBoolean();
+        TextureType textureType = TextureType.values()[buf.readInt()];
+        Integer imageIndex = buf.readInt();
         int s = buf.readInt();
-        lines = new ArrayList<>();
+        List<String>lines = new ArrayList<>();
         for (int i = 0; i < s; i++) {
             lines.add(buf.readUtf(32767));
         }
+        return new PacketUpdateSignData(pos, lines, backColor, textColor, bright, transparent, large, imageIndex, textureType);
     }
 
-    public void toBytes(FriendlyByteBuf buf) {
+    @Override
+    public void write(FriendlyByteBuf buf) {
         buf.writeBlockPos(pos);
         if (backColor != null) {
             buf.writeBoolean(true);
@@ -75,19 +66,26 @@ public class PacketUpdateSignData {
         lines.forEach(buf::writeUtf);
     }
 
-    public boolean handle(Supplier<NetworkEvent.Context> supplier) {
-        NetworkEvent.Context ctx = supplier.get();
-        BlockEntity te = ctx.getSender().level().getBlockEntity(pos);
-        if (te instanceof AbstractSignTileEntity sign) {
-            sign.setLines(lines);
-            sign.setBackColor(backColor);
-            sign.setTextColor(textColor);
-            sign.setBright(bright);
-            sign.setLarge(large);
-            sign.setTransparent(transparent);
-            sign.setTextureType(textureType);
-            sign.setIconIndex(imageIndex);
-        }
-        return true;
+    @Override
+    public ResourceLocation id() {
+        return ID;
+    }
+
+    public void handle(PlayPayloadContext ctx) {
+        ctx.workHandler().submitAsync(() -> {
+            ctx.player().ifPresent(player -> {
+                BlockEntity te = player.level().getBlockEntity(pos);
+                if (te instanceof AbstractSignTileEntity sign) {
+                    sign.setLines(lines);
+                    sign.setBackColor(backColor);
+                    sign.setTextColor(textColor);
+                    sign.setBright(bright);
+                    sign.setLarge(large);
+                    sign.setTransparent(transparent);
+                    sign.setTextureType(textureType);
+                    sign.setIconIndex(imageIndex);
+                }
+            });
+        });
     }
 }

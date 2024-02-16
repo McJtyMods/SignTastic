@@ -15,6 +15,8 @@ import net.minecraftforge.network.simple.SimpleChannel;
 
 import javax.annotation.Nonnull;
 
+import static mcjty.lib.network.PlayPayloadContext.wrap;
+
 public class Messages {
     public static SimpleChannel INSTANCE;
 
@@ -33,11 +35,7 @@ public class Messages {
 
         INSTANCE = net;
 
-        net.messageBuilder(PacketUpdateSignData.class, id())
-                .encoder(PacketUpdateSignData::toBytes)
-                .decoder(PacketUpdateSignData::new)
-                .consumerMainThread(PacketUpdateSignData::handle)
-                .add();
+        net.registerMessage(id(), PacketUpdateSignData.class, PacketUpdateSignData::write, PacketUpdateSignData::create, wrap(PacketUpdateSignData::handle));
 
         PacketHandler.registerStandardMessages(id(), net);
     }

@@ -8,7 +8,6 @@ import com.mcjty.signtastic.modules.signs.blocks.AbstractSignTileEntity;
 import com.mcjty.signtastic.modules.signs.network.PacketUpdateSignData;
 import com.mcjty.signtastic.setup.Config;
 import com.mcjty.signtastic.setup.Messages;
-import com.mojang.blaze3d.vertex.PoseStack;
 import mcjty.lib.container.GenericContainer;
 import mcjty.lib.gui.GenericGuiContainer;
 import mcjty.lib.gui.ManualEntry;
@@ -138,7 +137,7 @@ public class SignGui extends GenericGuiContainer<AbstractSignTileEntity, Generic
     }
 
     private void update() {
-        Messages.INSTANCE.sendToServer(new PacketUpdateSignData(tileEntity.getBlockPos(),
+        Messages.INSTANCE.sendToServer(PacketUpdateSignData.create(tileEntity.getBlockPos(),
                 Arrays.stream(labels).map(TextField::getText).collect(Collectors.toList()),
                 backColorButton.isPressed() ? backColorSelector.getCurrentColor() : null,
                 textColorSelector.getCurrentColor(), fullBrightButton.isPressed(), transparentButton.isPressed(),
