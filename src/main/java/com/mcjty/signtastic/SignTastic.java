@@ -10,7 +10,6 @@ import net.minecraft.world.item.Item;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
@@ -33,8 +32,8 @@ public class SignTastic {
 
         instance = this;
         Config.register();
-        setupModules();
-        Registration.register();
+        setupModules(bus, dist);
+        Registration.register(bus);
 
         bus.addListener(setup::init);
         bus.addListener(modules::init);
@@ -55,7 +54,7 @@ public class SignTastic {
         datagen.generate();
     }
 
-    private void setupModules() {
-        modules.register(new SignsModule());
+    private void setupModules(IEventBus bus, Dist dist) {
+        modules.register(new SignsModule(bus, dist));
     }
 }

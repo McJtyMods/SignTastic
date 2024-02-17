@@ -18,11 +18,9 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.RegistryObject;
 
 import java.util.function.Supplier;
 
@@ -49,10 +47,10 @@ public class SignsModule implements IModule {
     public static final DeferredItem<SignConfiguratorItem> SIGN_CONFIGURATOR = ITEMS.register("sign_configurator", tab(SignConfiguratorItem::new));
 
 
-    public SignsModule() {
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
-            ClientTools.onTextureStitch(FMLJavaModLoadingContext.get().getModEventBus(), ClientSetup::onTextureStitch);
-        });
+    public SignsModule(IEventBus bus, Dist dist) {
+        if (dist.isClient()) {
+            ClientTools.onTextureStitch(bus, ClientSetup::onTextureStitch);
+        }
     }
 
     @Override
@@ -69,7 +67,7 @@ public class SignsModule implements IModule {
     }
 
     @Override
-    public void initConfig() {
+    public void initConfig(IEventBus bus) {
 
     }
 
