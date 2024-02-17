@@ -1,7 +1,6 @@
 package com.mcjty.signtastic.modules.signs;
 
 import com.mcjty.signtastic.modules.signs.blocks.*;
-import com.mcjty.signtastic.modules.signs.client.ClientSetup;
 import com.mcjty.signtastic.modules.signs.client.SignGui;
 import com.mcjty.signtastic.modules.signs.client.SignRenderer;
 import com.mcjty.signtastic.modules.signs.items.SignConfiguratorItem;
@@ -11,7 +10,6 @@ import mcjty.lib.datagen.Dob;
 import mcjty.lib.modules.IModule;
 import mcjty.lib.setup.DeferredBlock;
 import mcjty.lib.setup.DeferredItem;
-import mcjty.lib.varia.ClientTools;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
@@ -48,9 +46,6 @@ public class SignsModule implements IModule {
 
 
     public SignsModule(IEventBus bus, Dist dist) {
-        if (dist.isClient()) {
-            ClientTools.onTextureStitch(bus, ClientSetup::onTextureStitch);
-        }
     }
 
     @Override
