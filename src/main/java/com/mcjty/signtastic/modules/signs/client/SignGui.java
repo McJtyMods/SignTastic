@@ -137,7 +137,7 @@ public class SignGui extends GenericGuiContainer<AbstractSignTileEntity, Generic
     }
 
     private void update() {
-        Messages.INSTANCE.sendToServer(PacketUpdateSignData.create(tileEntity.getBlockPos(),
+        Messages.sendToServer(PacketUpdateSignData.create(tileEntity.getBlockPos(),
                 Arrays.stream(labels).map(TextField::getText).collect(Collectors.toList()),
                 backColorButton.isPressed() ? backColorSelector.getCurrentColor() : null,
                 textColorSelector.getCurrentColor(), fullBrightButton.isPressed(), transparentButton.isPressed(),
