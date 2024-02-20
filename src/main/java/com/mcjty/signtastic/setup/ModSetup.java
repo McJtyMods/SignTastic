@@ -11,7 +11,7 @@ public class ModSetup extends DefaultModSetup {
         super.init(e);
 
         MinecraftForge.EVENT_BUS.register(new ForgeEventHandlers());
-        Messages.registerMessages("signtastic");
+        Messages.registerMessages();
     }
 
     @Override
