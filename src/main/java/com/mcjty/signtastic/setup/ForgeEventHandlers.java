@@ -5,9 +5,9 @@ import com.mcjty.signtastic.modules.signs.items.SignConfiguratorItem;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.eventbus.api.Event;
+import net.neoforged.neoforge.eventbus.api.SubscribeEvent;
 
 public class ForgeEventHandlers {
 
