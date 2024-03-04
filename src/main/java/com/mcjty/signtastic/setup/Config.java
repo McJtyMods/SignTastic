@@ -1,8 +1,8 @@
 package com.mcjty.signtastic.setup;
 
 
-import net.neoforged.neoforge.common.ForgeConfigSpec;
-import net.neoforged.neoforge.common.ForgeConfigSpec.Builder;
+import net.neoforged.neoforge.common.ModConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec.Builder;
 import net.neoforged.neoforge.fml.ModLoadingContext;
 import net.neoforged.neoforge.fml.config.ModConfig;
 
@@ -10,12 +10,12 @@ public class Config {
 
     public static final Builder CLIENT_BUILDER = new Builder();
 
-    public static ForgeConfigSpec CLIENT_CONFIG;
+    public static ModConfigSpec CLIENT_CONFIG;
 
-    public static ForgeConfigSpec.IntValue ICONS;
-    public static ForgeConfigSpec.IntValue ICON_SIZE;
-    public static ForgeConfigSpec.IntValue HORIZONTAL_ICONS;
-    public static ForgeConfigSpec.IntValue VERTICAL_ICONS;
+    public static ModConfigSpec.IntValue ICONS;
+    public static ModConfigSpec.IntValue ICON_SIZE;
+    public static ModConfigSpec.IntValue HORIZONTAL_ICONS;
+    public static ModConfigSpec.IntValue VERTICAL_ICONS;
 
     public static void register() {
         CLIENT_BUILDER.comment("General settings").push("general");

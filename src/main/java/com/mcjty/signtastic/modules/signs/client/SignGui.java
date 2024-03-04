@@ -150,7 +150,7 @@ public class SignGui extends GenericGuiContainer<AbstractSignTileEntity, Generic
     public void render(GuiGraphics graphics, int xSize_lo, int ySize_lo, float par3) {
         super.render(graphics, xSize_lo, ySize_lo, par3);
         backColorSelector.enabled(backColorButton.isPressed());
-        drawWindow(graphics);
+        drawWindow(graphics, xxx, xxx, yyy);
     }
 
     public static void register() {
