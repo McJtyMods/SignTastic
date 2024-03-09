@@ -2,7 +2,6 @@ package com.mcjty.signtastic.setup;
 
 import com.mcjty.signtastic.SignTastic;
 import com.mcjty.signtastic.modules.signs.network.PacketUpdateSignData;
-import mcjty.lib.network.IPayloadRegistrar;
 import mcjty.lib.network.Networking;
 
 public class Messages {

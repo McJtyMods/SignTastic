@@ -3,8 +3,6 @@ package com.mcjty.signtastic.modules.signs.network;
 import com.mcjty.signtastic.SignTastic;
 import com.mcjty.signtastic.modules.signs.TextureType;
 import com.mcjty.signtastic.modules.signs.blocks.AbstractSignTileEntity;
-import mcjty.lib.network.CustomPacketPayload;
-import mcjty.lib.network.PlayPayloadContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
