@@ -39,7 +39,7 @@ public class SignConfiguratorItem extends Item implements ITooltipSettings {
     @Override
     public void appendHoverText(ItemStack itemStack, Level world, List<Component> list, TooltipFlag flags) {
         super.appendHoverText(itemStack, world, list, flags);
-        tooltipBuilder.get().makeTooltip(ForgeRegistries.ITEMS.getKey(this), itemStack, list, flags);
+        tooltipBuilder.get().makeTooltip(BuiltInRegistries.ITEM.getKey(this), itemStack, list, flags);
     }
 
     @Override
