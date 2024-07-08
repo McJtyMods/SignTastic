@@ -35,7 +35,7 @@ public class AbstractSignBlock extends BaseBlock {
     }
 
     public InteractionResult activate(Level world, BlockPos pos, BlockState state, Player player, InteractionHand hand, BlockHitResult result) {
-        return use(state, world, pos, player, hand, result);
+        return useWithoutItem(state, world, pos, player, result);
     }
 
     @Override

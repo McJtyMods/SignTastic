@@ -1,8 +1,10 @@
 package com.mcjty.signtastic.modules.signs.blocks;
 
-import com.mcjty.signtastic.modules.signs.SignSettings;
+import com.mcjty.signtastic.modules.signs.data.SignData;
+import com.mcjty.signtastic.modules.signs.data.SignSettings;
 import com.mcjty.signtastic.modules.signs.SignsModule;
 import com.mcjty.signtastic.modules.signs.TextureType;
+import com.mcjty.signtastic.setup.Registration;
 import mcjty.lib.api.container.DefaultContainerProvider;
 import mcjty.lib.container.GenericContainer;
 import mcjty.lib.tileentity.Cap;
@@ -16,17 +18,12 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.common.util.Lazy;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbstractSignTileEntity extends GenericTileEntity {
-
-    private SignSettings settings = new SignSettings();
-
-    private List<String> lines = new ArrayList<>();
 
     @Cap(type = CapType.CONTAINER)
     private final Lazy<MenuProvider> screenHandler = Lazy.of(() -> new DefaultContainerProvider<GenericContainer>("Builder")
@@ -38,26 +35,19 @@ public abstract class AbstractSignTileEntity extends GenericTileEntity {
     }
 
     public void setLines(List<String> lines) {
-        this.lines = new ArrayList<>(lines);
+        SignData data = getData(Registration.SIGNDATA);
+        data.lines().clear();
+        data.lines().addAll(lines);
         markDirtyClient();
     }
 
     public List<String> getLines() {
-        return lines;
+        return getData(Registration.SIGNDATA).lines();
     }
 
     public abstract int getLinesSupported();
 
     public abstract float getRenderOffset();
-
-    @Override
-    public AABB getRenderBoundingBox() {
-        int xCoord = getBlockPos().getX();
-        int yCoord = getBlockPos().getY();
-        int zCoord = getBlockPos().getZ();
-        int size = 1;
-        return new AABB(xCoord - size - 1, yCoord - size - 1, zCoord - size - 1, xCoord + size + 1, yCoord + size + 1, zCoord + size + 1); // TODO see if we can shrink this
-    }
 
     @Override
     public void loadClientDataFromNBT(CompoundTag tagCompound) {

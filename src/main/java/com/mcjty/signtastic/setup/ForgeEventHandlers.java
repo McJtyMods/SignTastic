@@ -5,8 +5,8 @@ import com.mcjty.signtastic.modules.signs.items.SignConfiguratorItem;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.common.util.TriState;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.neoforged.neoforge.eventbus.api.Event;
 import net.neoforged.bus.api.SubscribeEvent;
 
 public class ForgeEventHandlers {
@@ -18,8 +18,8 @@ public class ForgeEventHandlers {
             Level world = event.getLevel();
             BlockEntity blockEntity = world.getBlockEntity(pos);
             if (blockEntity instanceof AbstractSignTileEntity) {
-                event.setUseBlock(Event.Result.DENY);
-                event.setUseItem(Event.Result.ALLOW);
+                event.setUseBlock(TriState.FALSE);
+                event.setUseItem(TriState.TRUE);
             }
         }
     }

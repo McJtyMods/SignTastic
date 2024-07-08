@@ -1,7 +1,7 @@
 package com.mcjty.signtastic.modules.signs.client;
 
 import com.mcjty.signtastic.SignTastic;
-import com.mcjty.signtastic.modules.signs.SignSettings;
+import com.mcjty.signtastic.modules.signs.data.SignSettings;
 import com.mcjty.signtastic.modules.signs.SignsModule;
 import com.mcjty.signtastic.modules.signs.TextureType;
 import com.mcjty.signtastic.modules.signs.blocks.AbstractSignBlock;
@@ -24,12 +24,13 @@ import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.phys.AABB;
 
 import javax.annotation.Nullable;
 
 public class SignRenderer implements BlockEntityRenderer<AbstractSignTileEntity> {
 
-    public static final ResourceLocation SIGNS = new ResourceLocation(SignTastic.MODID, "block/signs");
+    public static final ResourceLocation SIGNS = ResourceLocation.fromNamespaceAndPath(SignTastic.MODID, "block/signs");
 
     public SignRenderer(BlockEntityRendererProvider.Context context) {
     }
@@ -229,4 +230,14 @@ public class SignRenderer implements BlockEntityRenderer<AbstractSignTileEntity>
         BlockEntityRenderers.register(SignsModule.TYPE_BLOCK_SIGN.get(), SignRenderer::new);
         BlockEntityRenderers.register(SignsModule.TYPE_SLAB_SIGN.get(), SignRenderer::new);
     }
+
+    @Override
+    public AABB getRenderBoundingBox(AbstractSignTileEntity be) {
+        int xCoord = be.getBlockPos().getX();
+        int yCoord = be.getBlockPos().getY();
+        int zCoord = be.getBlockPos().getZ();
+        int size = 1;
+        return new AABB(xCoord - size - 1, yCoord - size - 1, zCoord - size - 1, xCoord + size + 1, yCoord + size + 1, zCoord + size + 1); // TODO see if we can shrink this
+    }
+
 }

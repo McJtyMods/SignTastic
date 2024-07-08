@@ -7,12 +7,10 @@ import com.mcjty.signtastic.setup.Registration;
 import mcjty.lib.datagen.DataGen;
 import mcjty.lib.modules.Modules;
 import net.minecraft.world.item.Item;
-import net.neoforged.neoforge.api.distmarker.Dist;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.fml.common.Mod;
-import net.neoforged.neoforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.neoforged.neoforge.fml.loading.FMLEnvironment;
 
 import java.util.function.Supplier;
 
@@ -26,10 +24,7 @@ public class SignTastic {
     private Modules modules = new Modules();
     public static SignTastic instance;
 
-    public SignTastic() {
-        IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
-        Dist dist = FMLEnvironment.dist;
-
+    public SignTastic(IEventBus bus, Dist dist) {
         instance = this;
         Config.register();
         setupModules(bus, dist);

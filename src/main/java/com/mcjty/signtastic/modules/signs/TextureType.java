@@ -1,11 +1,16 @@
 package com.mcjty.signtastic.modules.signs;
 
+import com.mojang.serialization.Codec;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.StringRepresentable;
+import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public enum TextureType {
+public enum TextureType implements StringRepresentable {
 
     OAK("minecraft", "oak_planks"),
     ACACIA("minecraft", "acacia_planks"),
@@ -24,6 +29,9 @@ public enum TextureType {
 
     private final ResourceLocation id;
 
+    public static final Codec<TextureType> CODEC = StringRepresentable.fromEnum(TextureType::values);
+    public static final StreamCodec<FriendlyByteBuf, TextureType> STREAM_CODEC = NeoForgeStreamCodecs.enumCodec(TextureType.class);
+
     private static final Map<String, TextureType> MAP = new HashMap<>();
     static {
         for (TextureType type : TextureType.values()) {
@@ -32,7 +40,7 @@ public enum TextureType {
     }
 
     TextureType(String modid, String txt) {
-        this.id = new ResourceLocation(modid, "block/" + txt);
+        this.id = ResourceLocation.fromNamespaceAndPath(modid, "block/" + txt);
     }
 
     public ResourceLocation getId() {
@@ -41,5 +49,11 @@ public enum TextureType {
 
     public static TextureType getByName(String name) {
         return MAP.get(name.toLowerCase());
+    }
+
+
+    @Override
+    public String getSerializedName() {
+        return this.name();
     }
 }

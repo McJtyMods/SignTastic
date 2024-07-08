@@ -1,7 +1,7 @@
 package com.mcjty.signtastic.modules.signs.client;
 
 import com.mcjty.signtastic.SignTastic;
-import com.mcjty.signtastic.modules.signs.SignSettings;
+import com.mcjty.signtastic.modules.signs.data.SignSettings;
 import com.mcjty.signtastic.modules.signs.SignsModule;
 import com.mcjty.signtastic.modules.signs.TextureType;
 import com.mcjty.signtastic.modules.signs.blocks.AbstractSignTileEntity;
