@@ -3,21 +3,12 @@ package com.mcjty.signtastic.modules.signs.data;
 import com.mcjty.signtastic.modules.signs.TextureType;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import io.netty.buffer.ByteBuf;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
-public class SignSettings {
-
-    private boolean transparent = false;
-    private Integer backColor = null;       // Color of background
-    private int textColor = 0xffffff;       // Color of text
-    private boolean bright = false;         // True if the screen contents is full bright
-    private TextureType type = TextureType.OAK;
-    private boolean large = false;
-    private int iconIndex = 0;
+public record SignSettings(boolean transparent, Integer backColor, int textColor, boolean bright, boolean large, int iconIndex, TextureType type) {
 
     public static final Codec<SignSettings> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.BOOL.fieldOf("transparent").forGetter(SignSettings::isTransparent),
@@ -40,6 +31,7 @@ public class SignSettings {
             SignSettings::new);
 
     public SignSettings() {
+        this(false, null, 0xffffff, false, false, 0, TextureType.OAK);
     }
 
     public SignSettings(boolean transparent, Integer backColor, int textColor, boolean bright, boolean large, int iconIndex, TextureType type) {
@@ -56,55 +48,56 @@ public class SignSettings {
         return transparent;
     }
 
-    public void setTransparent(boolean transparent) {
-        this.transparent = transparent;
-    }
-
     public Integer getBackColor() {
         return backColor;
-    }
-
-    public void setBackColor(Integer backColor) {
-        this.backColor = backColor;
     }
 
     public int getTextColor() {
         return textColor;
     }
 
-    public void setTextColor(int textColor) {
-        this.textColor = textColor;
-    }
-
     public boolean isBright() {
         return bright;
-    }
-
-    public void setBright(boolean bright) {
-        this.bright = bright;
     }
 
     public TextureType getTextureType() {
         return type;
     }
 
-    public void setTextureType(TextureType type) {
-        this.type = type;
-    }
-
     public boolean isLarge() {
         return large;
-    }
-
-    public void setLarge(boolean large) {
-        this.large = large;
     }
 
     public int getIconIndex() {
         return iconIndex;
     }
 
-    public void setIconIndex(int iconIndex) {
-        this.iconIndex = iconIndex;
+    // Setters that return a new instance of SignSettings with the updated value
+    public SignSettings setTransparent(boolean transparent) {
+        return new SignSettings(transparent, backColor, textColor, bright, large, iconIndex, type);
+    }
+
+    public SignSettings setBackColor(Integer backColor) {
+        return new SignSettings(transparent, backColor, textColor, bright, large, iconIndex, type);
+    }
+
+    public SignSettings setTextColor(int textColor) {
+        return new SignSettings(transparent, backColor, textColor, bright, large, iconIndex, type);
+    }
+
+    public SignSettings setBright(boolean bright) {
+        return new SignSettings(transparent, backColor, textColor, bright, large, iconIndex, type);
+    }
+
+    public SignSettings setLarge(boolean large) {
+        return new SignSettings(transparent, backColor, textColor, bright, large, iconIndex, type);
+    }
+
+    public SignSettings setIconIndex(int iconIndex) {
+        return new SignSettings(transparent, backColor, textColor, bright, large, iconIndex, type);
+    }
+
+    public SignSettings setTextureType(TextureType type) {
+        return new SignSettings(transparent, backColor, textColor, bright, large, iconIndex, type);
     }
 }

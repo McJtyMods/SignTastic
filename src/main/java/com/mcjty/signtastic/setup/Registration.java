@@ -2,11 +2,13 @@ package com.mcjty.signtastic.setup;
 
 
 import com.mcjty.signtastic.SignTastic;
+import com.mcjty.signtastic.modules.signs.SignsModule;
 import com.mcjty.signtastic.modules.signs.data.SignData;
 import com.mcjty.signtastic.modules.signs.data.SignSettings;
-import com.mcjty.signtastic.modules.signs.SignsModule;
+import mcjty.lib.api.infusable.ItemInfusable;
 import mcjty.lib.setup.DeferredBlocks;
 import mcjty.lib.setup.DeferredItems;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.MenuType;
@@ -33,6 +35,7 @@ public class Registration {
     public static final DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(Registries.MENU, MODID);
     public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
     public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, MODID);
+    public static final DeferredRegister.DataComponents REGISTRAR = DeferredRegister.createDataComponents(MODID);
 
     public static void register(IEventBus bus) {
         BLOCKS.register(bus);
@@ -47,11 +50,21 @@ public class Registration {
             "hotkeys", () -> AttachmentType.builder(SignSettings::new)
                     .serialize(SignSettings.CODEC)
                     .build());
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<SignSettings>> ITEM_SIGNSETTINGS = REGISTRAR.registerComponentType(
+            "signsettings",
+            builder -> builder
+                    .persistent(SignSettings.CODEC)
+                    .networkSynchronized(SignSettings.STREAM_CODEC));
 
     public static final Supplier<AttachmentType<SignData>> SIGNDATA = ATTACHMENT_TYPES.register(
             "hotkeys", () -> AttachmentType.builder(() -> new SignData())
                     .serialize(SignData.CODEC)
                     .build());
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<SignData>> ITEM_SIGNDATA = REGISTRAR.registerComponentType(
+            "signdata",
+            builder -> builder
+                    .persistent(SignData.CODEC)
+                    .networkSynchronized(SignData.STREAM_CODEC));
 
     public static Item.Properties createStandardProperties() {
         return SignTastic.setup.defaultProperties();

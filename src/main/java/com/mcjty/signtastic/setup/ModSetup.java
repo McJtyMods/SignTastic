@@ -9,9 +9,7 @@ public class ModSetup extends DefaultModSetup {
     @Override
     public void init(FMLCommonSetupEvent e) {
         super.init(e);
-
         NeoForge.EVENT_BUS.register(new ForgeEventHandlers());
-        Messages.registerMessages();
     }
 
     @Override

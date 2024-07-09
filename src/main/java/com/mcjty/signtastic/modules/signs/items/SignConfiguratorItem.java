@@ -1,14 +1,14 @@
 package com.mcjty.signtastic.modules.signs.items;
 
 import com.mcjty.signtastic.SignTastic;
-import com.mcjty.signtastic.modules.signs.data.SignSettings;
 import com.mcjty.signtastic.modules.signs.blocks.AbstractSignTileEntity;
+import com.mcjty.signtastic.modules.signs.data.SignSettings;
+import com.mcjty.signtastic.setup.Registration;
 import mcjty.lib.builder.TooltipBuilder;
 import mcjty.lib.tooltips.ITooltipSettings;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -57,21 +57,18 @@ public class SignConfiguratorItem extends Item implements ITooltipSettings {
             if (blockEntity instanceof AbstractSignTileEntity) {
                 AbstractSignTileEntity sign = (AbstractSignTileEntity) blockEntity;
                 if (context.getPlayer().isCrouching()) {
-                    CompoundTag tag = context.getItemInHand().getTag();
-                    if (tag == null || !tag.contains("settings")) {
+                    // Paste
+                    SignSettings settings = context.getItemInHand().get(Registration.ITEM_SIGNSETTINGS);
+                    if (settings == null) {
                         context.getPlayer().sendSystemMessage(Component.literal("There are no copied settings!").withStyle(ChatFormatting.RED));
                     } else {
                         context.getPlayer().sendSystemMessage(Component.literal("Pasted settings to sign!").withStyle(ChatFormatting.GREEN));
-                        CompoundTag settingsTag = tag.getCompound("settings");
-                        sign.getSettings().read(settingsTag);
-                        sign.markDirtyClient();
+                        sign.setSettings(settings);
                     }
                 } else {
                     // Copy
                     SignSettings settings = sign.getSettings();
-                    CompoundTag tag = new CompoundTag();
-                    settings.write(tag);
-                    context.getItemInHand().getOrCreateTag().put("settings", tag);
+                    context.getItemInHand().set(Registration.ITEM_SIGNSETTINGS, settings);
                     context.getPlayer().sendSystemMessage(Component.literal("Copied settings from sign!").withStyle(ChatFormatting.GREEN));
                 }
             }

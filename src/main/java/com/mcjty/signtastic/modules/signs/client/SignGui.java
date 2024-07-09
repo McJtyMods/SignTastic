@@ -23,8 +23,8 @@ import java.util.stream.Collectors;
 
 public class SignGui extends GenericGuiContainer<AbstractSignTileEntity, GenericContainer> {
 
-    public static final ResourceLocation SIGNS_GUI = new ResourceLocation(SignTastic.MODID, "textures/block/signs.png");
-    private static final ResourceLocation BACKGROUND = new ResourceLocation(SignTastic.MODID, "textures/gui/signgui.png");
+    public static final ResourceLocation SIGNS_GUI = ResourceLocation.fromNamespaceAndPath(SignTastic.MODID, "textures/block/signs.png");
+    private static final ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath(SignTastic.MODID, "textures/gui/signgui.png");
     public static final int WIDTH = 215;
     public static final int HEIGHT = 200;
 
@@ -147,10 +147,10 @@ public class SignGui extends GenericGuiContainer<AbstractSignTileEntity, Generic
     }
 
     @Override
-    public void render(GuiGraphics graphics, int xSize_lo, int ySize_lo, float par3) {
-        super.render(graphics, xSize_lo, ySize_lo, par3);
+    public void render(GuiGraphics graphics, int xSize_lo, int ySize_lo, float partialTicks) {
+        super.render(graphics, xSize_lo, ySize_lo, partialTicks);
         backColorSelector.enabled(backColorButton.isPressed());
-        drawWindow(graphics, xxx, xxx, yyy);
+        drawWindow(graphics, partialTicks, xSize_lo, ySize_lo);
     }
 
     public static void register() {

@@ -6,7 +6,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.model.generators.BlockModelBuilder;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
 
-import static net.minecraftforge.client.model.generators.ModelProvider.BLOCK_FOLDER;
+import static net.neoforged.neoforge.client.model.generators.ModelProvider.BLOCK_FOLDER;
+
 
 public class DataGenHelper {
 
@@ -21,8 +22,8 @@ public class DataGenHelper {
                 .face(Direction.NORTH).texture("#front").end()
                 .face(Direction.SOUTH).cullface(Direction.SOUTH).texture("#side").end()
                 .end()
-                .texture("side", new ResourceLocation("minecraft", "block/oak_planks"))
-                .texture("particle", new ResourceLocation("minecraft", "block/oak_planks"))
+                .texture("side", ResourceLocation.fromNamespaceAndPath("minecraft", "block/oak_planks"))
+                .texture("particle", ResourceLocation.fromNamespaceAndPath("minecraft", "block/oak_planks"))
                 .texture("front", texture);
         return model;
     }

@@ -11,11 +11,13 @@ import mcjty.lib.tileentity.Cap;
 import mcjty.lib.tileentity.CapType;
 import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.MenuProvider;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.util.Lazy;
@@ -32,6 +34,8 @@ public abstract class AbstractSignTileEntity extends GenericTileEntity {
 
     public AbstractSignTileEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
+        registerAttachment(Registration.SIGNDATA.get(), SignData.STREAM_CODEC);
+        registerAttachment(Registration.SIGNSETTINGS.get(), SignSettings.STREAM_CODEC);
     }
 
     public void setLines(List<String> lines) {
@@ -45,32 +49,33 @@ public abstract class AbstractSignTileEntity extends GenericTileEntity {
         return getData(Registration.SIGNDATA).lines();
     }
 
+    public void setSettings(SignSettings settings) {
+        setData(Registration.SIGNSETTINGS, settings);
+        markDirtyClient();
+    }
+
     public abstract int getLinesSupported();
 
     public abstract float getRenderOffset();
 
     @Override
-    public void loadClientDataFromNBT(CompoundTag tagCompound) {
-        if (tagCompound.contains("Info")) {
-            CompoundTag info = tagCompound.getCompound("Info");
-            settings.read(info);
-            ListTag linesTag = info.getList("lines", Tag.TAG_STRING);
-            lines.clear();
-            for (Tag tag : linesTag) {
-                lines.add(tag.getAsString());
-            }
+    protected void applyImplicitComponents(DataComponentInput input) {
+        var data = input.get(Registration.ITEM_SIGNDATA);
+        if (data != null) {
+            setData(Registration.SIGNDATA, data);
+        }
+        var settings = input.get(Registration.ITEM_SIGNSETTINGS);
+        if (settings != null) {
+            setData(Registration.SIGNSETTINGS, settings);
         }
     }
 
     @Override
-    public void saveClientDataToNBT(CompoundTag tagCompound) {
-        CompoundTag info = getOrCreateInfo(tagCompound);
-        settings.write(info);
-        ListTag linesTag = new ListTag();
-        for (String line : lines) {
-            linesTag.add(StringTag.valueOf(line));
-        }
-        info.put("lines", linesTag);
+    protected void collectImplicitComponents(DataComponentMap.Builder builder) {
+        var data = getData(Registration.SIGNDATA);
+        builder.set(Registration.ITEM_SIGNDATA, data);
+        var settings = getData(Registration.SIGNSETTINGS);
+        builder.set(Registration.ITEM_SIGNSETTINGS, settings);
     }
 
     @Override
@@ -90,41 +95,55 @@ public abstract class AbstractSignTileEntity extends GenericTileEntity {
     }
 
     public SignSettings getSettings() {
-        return settings;
+        return getData(Registration.SIGNSETTINGS);
     }
 
     public void setIconIndex(int iconIndex) {
-        settings.setIconIndex(iconIndex);
+        SignSettings settings = getData(Registration.SIGNSETTINGS);
+        settings = settings.setIconIndex(iconIndex);
+        setData(Registration.SIGNSETTINGS, settings);
         markDirtyClient();
     }
 
     public void setBackColor(Integer backColor) {
-        settings.setBackColor(backColor);
+        SignSettings settings = getData(Registration.SIGNSETTINGS);
+        settings = settings.setBackColor(backColor);
+        setData(Registration.SIGNSETTINGS, settings);
         markDirtyClient();
     }
 
     public void setTextColor(int textColor) {
-        settings.setTextColor(textColor);
+        SignSettings settings = getData(Registration.SIGNSETTINGS);
+        settings = settings.setTextColor(textColor);
+        setData(Registration.SIGNSETTINGS, settings);
         markDirtyClient();
     }
 
     public void setBright(boolean bright) {
-        settings.setBright(bright);
+        SignSettings settings = getData(Registration.SIGNSETTINGS);
+        settings = settings.setBright(bright);
+        setData(Registration.SIGNSETTINGS, settings);
         markDirtyClient();
     }
 
     public void setLarge(boolean large) {
-        settings.setLarge(large);
+        SignSettings settings = getData(Registration.SIGNSETTINGS);
+        settings = settings.setLarge(large);
+        setData(Registration.SIGNSETTINGS, settings);
         markDirtyClient();
     }
 
     public void setTransparent(boolean transparent) {
-        settings.setTransparent(transparent);
+        SignSettings settings = getData(Registration.SIGNSETTINGS);
+        settings = settings.setTransparent(transparent);
+        setData(Registration.SIGNSETTINGS, settings);
         markDirtyClient();
     }
 
     public void setTextureType(TextureType type) {
-        settings.setTextureType(type);
+        SignSettings settings = getData(Registration.SIGNSETTINGS);
+        settings = settings.setTextureType(type);
+        setData(Registration.SIGNSETTINGS, settings);
         markDirtyClient();
     }
 }
