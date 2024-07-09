@@ -5,7 +5,6 @@ import com.mcjty.signtastic.SignTastic;
 import com.mcjty.signtastic.modules.signs.SignsModule;
 import com.mcjty.signtastic.modules.signs.data.SignData;
 import com.mcjty.signtastic.modules.signs.data.SignSettings;
-import mcjty.lib.api.infusable.ItemInfusable;
 import mcjty.lib.setup.DeferredBlocks;
 import mcjty.lib.setup.DeferredItems;
 import net.minecraft.core.component.DataComponentType;
@@ -44,10 +43,11 @@ public class Registration {
         CONTAINERS.register(bus);
         TABS.register(bus);
         ATTACHMENT_TYPES.register(bus);
+        REGISTRAR.register(bus);
     }
 
     public static final Supplier<AttachmentType<SignSettings>> SIGNSETTINGS = ATTACHMENT_TYPES.register(
-            "hotkeys", () -> AttachmentType.builder(SignSettings::new)
+            "signsettings", () -> AttachmentType.builder(SignSettings::new)
                     .serialize(SignSettings.CODEC)
                     .build());
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<SignSettings>> ITEM_SIGNSETTINGS = REGISTRAR.registerComponentType(
@@ -57,7 +57,7 @@ public class Registration {
                     .networkSynchronized(SignSettings.STREAM_CODEC));
 
     public static final Supplier<AttachmentType<SignData>> SIGNDATA = ATTACHMENT_TYPES.register(
-            "hotkeys", () -> AttachmentType.builder(() -> new SignData())
+            "signdata", () -> AttachmentType.builder(() -> new SignData())
                     .serialize(SignData.CODEC)
                     .build());
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<SignData>> ITEM_SIGNDATA = REGISTRAR.registerComponentType(
