@@ -7,7 +7,7 @@ import net.minecraft.world.level.block.state.BlockState;
 public class SquareSignTileEntity extends AbstractSignTileEntity {
 
     public SquareSignTileEntity(BlockPos pos, BlockState state) {
-        super(SignsModule.TYPE_SQUARE_SIGN.get(), pos, state);
+        super(SignsModule.SQUARE_SIGN.be().get(), pos, state);
     }
 
     @Override

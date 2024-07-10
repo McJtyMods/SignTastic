@@ -34,10 +34,6 @@ public class AbstractSignBlock extends BaseBlock {
         return super.getStateForPlacement(context).setValue(HORIZ_FACING, context.getPlayer().getDirection().getOpposite());
     }
 
-    public InteractionResult activate(Level world, BlockPos pos, BlockState state, Player player, InteractionHand hand, BlockHitResult result) {
-        return useWithoutItem(state, world, pos, player, result);
-    }
-
     @Override
     public BlockState rotate(BlockState state, LevelAccessor world, BlockPos pos, Rotation rot) {
         // Doesn't make sense to rotate a potentially 3x3 screen,

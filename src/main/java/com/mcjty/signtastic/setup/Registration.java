@@ -5,6 +5,8 @@ import com.mcjty.signtastic.SignTastic;
 import com.mcjty.signtastic.modules.signs.SignsModule;
 import com.mcjty.signtastic.modules.signs.data.SignData;
 import com.mcjty.signtastic.modules.signs.data.SignSettings;
+import mcjty.lib.blocks.RBlock;
+import mcjty.lib.blocks.RBlockRegistry;
 import mcjty.lib.setup.DeferredBlocks;
 import mcjty.lib.setup.DeferredItems;
 import net.minecraft.core.component.DataComponentType;
@@ -22,24 +24,27 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import static com.mcjty.signtastic.SignTastic.MODID;
 
 public class Registration {
 
-    public static final DeferredBlocks BLOCKS = DeferredBlocks.create(MODID);
-    public static final DeferredItems ITEMS = DeferredItems.create(MODID);
-    public static final DeferredRegister<BlockEntityType<?>> TILES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, MODID);
+    public static final RBlockRegistry RBLOCKS = new RBlockRegistry(MODID, supplier -> SignTastic.setup.addTabItem(supplier));
+//    public static final DeferredBlocks BLOCKS = DeferredBlocks.create(MODID);
+//    public static final DeferredItems ITEMS = DeferredItems.create(MODID);
+//    public static final DeferredRegister<BlockEntityType<?>> TILES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, MODID);
     public static final DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(Registries.MENU, MODID);
     public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
     public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, MODID);
     public static final DeferredRegister.DataComponents REGISTRAR = DeferredRegister.createDataComponents(MODID);
 
     public static void register(IEventBus bus) {
-        BLOCKS.register(bus);
-        ITEMS.register(bus);
-        TILES.register(bus);
+        RBLOCKS.register(bus);
+//        BLOCKS.register(bus);
+//        ITEMS.register(bus);
+//        TILES.register(bus);
         CONTAINERS.register(bus);
         TABS.register(bus);
         ATTACHMENT_TYPES.register(bus);
@@ -72,7 +77,7 @@ public class Registration {
 
     public static DeferredHolder<CreativeModeTab, CreativeModeTab> TAB = TABS.register("signtastic", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup." + MODID))
-            .icon(() -> new ItemStack(SignsModule.SQUARE_SIGN_ITEM.get()))
+            .icon(() -> new ItemStack(SignsModule.SQUARE_SIGN.item().get()))
             .withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
             .displayItems((featureFlags, output) -> {
                 SignTastic.setup.populateTab(output);

@@ -7,7 +7,7 @@ import net.minecraft.world.level.block.state.BlockState;
 public class BlockSignTileEntity extends AbstractSignTileEntity {
 
     public BlockSignTileEntity(BlockPos pos, BlockState state) {
-        super(SignsModule.TYPE_BLOCK_SIGN.get(), pos, state);
+        super(SignsModule.BLOCK_SIGN.be().get(), pos, state);
     }
 
     @Override

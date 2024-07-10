@@ -226,9 +226,9 @@ public class SignRenderer implements BlockEntityRenderer<AbstractSignTileEntity>
     }
 
     public static void register() {
-        BlockEntityRenderers.register(SignsModule.TYPE_SQUARE_SIGN.get(), SignRenderer::new);
-        BlockEntityRenderers.register(SignsModule.TYPE_BLOCK_SIGN.get(), SignRenderer::new);
-        BlockEntityRenderers.register(SignsModule.TYPE_SLAB_SIGN.get(), SignRenderer::new);
+        BlockEntityRenderers.register(SignsModule.SQUARE_SIGN.be().get(), SignRenderer::new);
+        BlockEntityRenderers.register(SignsModule.BLOCK_SIGN.be().get(), SignRenderer::new);
+        BlockEntityRenderers.register(SignsModule.SLAB_SIGN.be().get(), SignRenderer::new);
     }
 
     @Override
