@@ -5,15 +5,22 @@ import com.mcjty.signtastic.setup.Config;
 import com.mcjty.signtastic.setup.Messages;
 import com.mcjty.signtastic.setup.ModSetup;
 import com.mcjty.signtastic.setup.Registration;
+import io.netty.channel.PreferHeapByteBufAllocator;
 import mcjty.lib.datagen.DataGen;
 import mcjty.lib.modules.Modules;
+import mcjty.lib.tileentity.AnnotationHolder;
+import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.world.item.Item;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.capabilities.BlockCapability;
+import net.neoforged.neoforge.capabilities.IBlockCapabilityProvider;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 
+import java.util.Map;
 import java.util.function.Supplier;
 
 @Mod(SignTastic.MODID)
@@ -36,6 +43,7 @@ public class SignTastic {
         bus.addListener(modules::init);
         bus.addListener(this::onDataGen);
         bus.addListener(Messages::registerMessages);
+        bus.addListener(this::onRegisterCapabilities);
 
         if (dist.isClient()) {
             bus.addListener(modules::initClient);
@@ -54,5 +62,17 @@ public class SignTastic {
 
     private void setupModules(IEventBus bus, Dist dist) {
         modules.register(new SignsModule(bus, dist));
+    }
+
+    private void onRegisterCapabilities(RegisterCapabilitiesEvent event) {
+        for (Map.Entry<Class<? extends GenericTileEntity>, AnnotationHolder> entry : Registration.RBLOCKS.getHolders().entrySet()) {
+            AnnotationHolder holder = entry.getValue();
+            for (int i = 0 ; i < holder.getCapSize() ; i++) {
+                AnnotationHolder.CapHolder<Object, Object> hd = holder.getCapHolder(i);
+                BlockCapability<Object, Object> bc = hd.capability();
+                IBlockCapabilityProvider<Object, Object> provider = hd.provider();
+                event.registerBlock(bc, provider, hd.block().get());
+            }
+        }
     }
 }

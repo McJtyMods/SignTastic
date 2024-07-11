@@ -32,9 +32,6 @@ import static com.mcjty.signtastic.SignTastic.MODID;
 public class Registration {
 
     public static final RBlockRegistry RBLOCKS = new RBlockRegistry(MODID, supplier -> SignTastic.setup.addTabItem(supplier));
-//    public static final DeferredBlocks BLOCKS = DeferredBlocks.create(MODID);
-//    public static final DeferredItems ITEMS = DeferredItems.create(MODID);
-//    public static final DeferredRegister<BlockEntityType<?>> TILES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, MODID);
     public static final DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(Registries.MENU, MODID);
     public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
     public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, MODID);
@@ -42,9 +39,6 @@ public class Registration {
 
     public static void register(IEventBus bus) {
         RBLOCKS.register(bus);
-//        BLOCKS.register(bus);
-//        ITEMS.register(bus);
-//        TILES.register(bus);
         CONTAINERS.register(bus);
         TABS.register(bus);
         ATTACHMENT_TYPES.register(bus);
