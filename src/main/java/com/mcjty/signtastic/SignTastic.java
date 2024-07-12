@@ -10,7 +10,11 @@ import mcjty.lib.datagen.DataGen;
 import mcjty.lib.modules.Modules;
 import mcjty.lib.tileentity.AnnotationHolder;
 import mcjty.lib.tileentity.GenericTileEntity;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -19,6 +23,7 @@ import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.IBlockCapabilityProvider;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.function.Supplier;
@@ -71,7 +76,13 @@ public class SignTastic {
                 AnnotationHolder.CapHolder<Object, Object> hd = holder.getCapHolder(i);
                 BlockCapability<Object, Object> bc = hd.capability();
                 IBlockCapabilityProvider<Object, Object> provider = hd.provider();
-                event.registerBlock(bc, provider, hd.block().get());
+                event.registerBlock(bc, new IBlockCapabilityProvider<>() {
+                    @Nullable
+                    @Override
+                    public Object getCapability(Level level, BlockPos blockPos, BlockState blockState, @Nullable BlockEntity blockEntity, Object o) {
+                        return null;
+                    }
+                }, hd.block().get());
             }
         }
     }
