@@ -9,14 +9,21 @@ import mcjty.lib.container.GenericContainer;
 import mcjty.lib.datagen.DataGen;
 import mcjty.lib.datagen.Dob;
 import mcjty.lib.modules.IModule;
+import mcjty.lib.varia.SafeClientTools;
+import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.registries.DeferredItem;
 
 import java.util.function.Supplier;
@@ -51,6 +58,7 @@ public class SignsModule implements IModule {
 
 
     public SignsModule(IEventBus bus, Dist dist) {
+        bus.addListener(this::registerMenuScreens);
     }
 
     @Override
@@ -64,6 +72,16 @@ public class SignsModule implements IModule {
             SignGui.register();
         });
         SignRenderer.register();
+    }
+
+    public void registerMenuScreens(RegisterMenuScreensEvent event) {
+        event.register(CONTAINER_SIGN.get(), new MenuScreens.ScreenConstructor<GenericContainer, SignGui>() {
+            @Override
+            public SignGui create(GenericContainer container, Inventory inventory, Component component) {
+                BlockEntity te = SafeClientTools.getClientWorld().getBlockEntity(container.getPos());
+                return new SignGui((AbstractSignTileEntity) te, container, inventory);
+            }
+        });
     }
 
     @Override

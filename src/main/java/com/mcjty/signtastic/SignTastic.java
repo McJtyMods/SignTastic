@@ -26,6 +26,7 @@ import net.neoforged.neoforge.data.event.GatherDataEvent;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 @Mod(SignTastic.MODID)
@@ -73,13 +74,16 @@ public class SignTastic {
         for (Map.Entry<Class<? extends GenericTileEntity>, AnnotationHolder> entry : Registration.RBLOCKS.getHolders().entrySet()) {
             AnnotationHolder holder = entry.getValue();
             for (int i = 0 ; i < holder.getCapSize() ; i++) {
-                AnnotationHolder.CapHolder<Object, Object> hd = holder.getCapHolder(i);
-                BlockCapability<Object, Object> bc = hd.capability();
-                IBlockCapabilityProvider<Object, Object> provider = hd.provider();
+                var hd = holder.getCapHolder(i);
+                var bc = hd.capability();
+                var function = hd.function();
                 event.registerBlock(bc, new IBlockCapabilityProvider<>() {
                     @Nullable
                     @Override
                     public Object getCapability(Level level, BlockPos blockPos, BlockState blockState, @Nullable BlockEntity blockEntity, Object o) {
+                        if (blockEntity instanceof GenericTileEntity be) {
+                            return function.apply(be);
+                        }
                         return null;
                     }
                 }, hd.block().get());

@@ -24,13 +24,18 @@ import net.neoforged.neoforge.common.util.Lazy;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 public abstract class AbstractSignTileEntity extends GenericTileEntity {
 
+//    private final Lazy<MenuProvider> screenHandler = Lazy.of(() -> new DefaultContainerProvider<GenericContainer>("Builder")
+//            .containerSupplier(DefaultContainerProvider.empty(SignsModule.CONTAINER_SIGN, this))
+//    );
+
     @Cap(type = CapType.CONTAINER)
-    private final Lazy<MenuProvider> screenHandler = Lazy.of(() -> new DefaultContainerProvider<GenericContainer>("Builder")
-            .containerSupplier(DefaultContainerProvider.empty(SignsModule.CONTAINER_SIGN, this))
-    );
+    private final static Function<AbstractSignTileEntity, MenuProvider> SCREEN_HANDLER =
+            be -> new DefaultContainerProvider<GenericContainer>("Sign")
+                    .containerSupplier(DefaultContainerProvider.empty(SignsModule.CONTAINER_SIGN, be));
 
     public AbstractSignTileEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
