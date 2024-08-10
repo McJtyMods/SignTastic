@@ -1,3 +1,6 @@
+Upcoming:
+- The sign blocks are now properly rotatable
+
 1.19-2.1.4:
 - Fix for new McJtyLib
 

@@ -17,6 +17,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
@@ -34,15 +35,25 @@ public class AbstractSignBlock extends BaseBlock {
         return super.getStateForPlacement(context).setValue(HORIZ_FACING, context.getPlayer().getDirection().getOpposite());
     }
 
-    public InteractionResult activate(Level world, BlockPos pos, BlockState state, Player player, InteractionHand hand, BlockHitResult result) {
-        return use(state, world, pos, player, hand, result);
-    }
+//    @Override
+//    public BlockState rotate(BlockState state, LevelAccessor world, BlockPos pos, Rotation rot) {
+//        // Doesn't make sense to rotate a potentially 3x3 screen,
+//        // and is incompatible with our special wrench actions.
+//        return state;
+//    }
+
 
     @Override
-    public BlockState rotate(BlockState state, LevelAccessor world, BlockPos pos, Rotation rot) {
-        // Doesn't make sense to rotate a potentially 3x3 screen,
-        // and is incompatible with our special wrench actions.
-        return state;
+    public BlockState rotate(BlockState state, Rotation rot) {
+        BlockState s = super.rotate(state, rot);
+        s = s.setValue(HORIZ_FACING, rot.rotate(s.getValue(HORIZ_FACING)));
+        return s;
+    }
+
+    @NotNull
+    @Override
+    public InteractionResult use(@NotNull BlockState state, Level world, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult result) {
+        return super.use(state, world, pos, player, hand, result);
     }
 
     @Override
