@@ -1,10 +1,10 @@
 package com.mcjty.signtastic.modules.signs.client;
 
 import com.mcjty.signtastic.SignTastic;
-import com.mcjty.signtastic.modules.signs.data.SignSettings;
 import com.mcjty.signtastic.modules.signs.SignsModule;
 import com.mcjty.signtastic.modules.signs.TextureType;
 import com.mcjty.signtastic.modules.signs.blocks.AbstractSignTileEntity;
+import com.mcjty.signtastic.modules.signs.data.SignSettings;
 import com.mcjty.signtastic.modules.signs.network.PacketUpdateSignData;
 import com.mcjty.signtastic.setup.Config;
 import com.mcjty.signtastic.setup.Messages;
@@ -13,9 +13,14 @@ import mcjty.lib.gui.GenericGuiContainer;
 import mcjty.lib.gui.ManualEntry;
 import mcjty.lib.gui.Window;
 import mcjty.lib.gui.widgets.*;
+import mcjty.lib.varia.SafeClientTools;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 
 import java.util.Arrays;
 import java.util.List;
@@ -153,7 +158,10 @@ public class SignGui extends GenericGuiContainer<AbstractSignTileEntity, Generic
         drawWindow(graphics, partialTicks, xSize_lo, ySize_lo);
     }
 
-    public static void register() {
-        register(SignsModule.CONTAINER_SIGN.get(), SignGui::new);
+    public static void register(RegisterMenuScreensEvent event) {
+        event.<GenericContainer, SignGui>register(SignsModule.CONTAINER_SIGN.get(), (container, inventory, component) -> {
+            BlockEntity te = SafeClientTools.getClientWorld().getBlockEntity(container.getPos());
+            return new SignGui((AbstractSignTileEntity) te, container, inventory);
+        });
     }
 }
