@@ -26,10 +26,6 @@ import java.util.function.Function;
 
 public abstract class AbstractSignTileEntity extends GenericTileEntity {
 
-//    private final Lazy<MenuProvider> screenHandler = Lazy.of(() -> new DefaultContainerProvider<GenericContainer>("Builder")
-//            .containerSupplier(DefaultContainerProvider.empty(SignsModule.CONTAINER_SIGN, this))
-//    );
-
     @Cap(type = CapType.CONTAINER)
     private final static Function<AbstractSignTileEntity, MenuProvider> SCREEN_HANDLER =
             be -> new DefaultContainerProvider<GenericContainer>("Sign")
@@ -62,18 +58,14 @@ public abstract class AbstractSignTileEntity extends GenericTileEntity {
 
     @Override
     public void loadClientDataFromNBT(CompoundTag tag) {
-        SignData data = NbtOps.INSTANCE.withDecoder(SignData.CODEC).apply(tag.get("data")).result().map(Pair::getFirst).orElse(SignData.EMPTY);
-        setData(Registration.SIGNDATA, data);
-        SignSettings settings = NbtOps.INSTANCE.withDecoder(SignSettings.CODEC).apply(tag.get("settings")).result().map(Pair::getFirst).orElse(SignSettings.EMPTY);
-        setData(Registration.SIGNSETTINGS, settings);
+        setData(Registration.SIGNDATA, NbtOps.INSTANCE.withDecoder(SignData.CODEC).apply(tag.get("data")).result().map(Pair::getFirst).orElse(SignData.EMPTY));
+        setData(Registration.SIGNSETTINGS, NbtOps.INSTANCE.withDecoder(SignSettings.CODEC).apply(tag.get("settings")).result().map(Pair::getFirst).orElse(SignSettings.EMPTY));
     }
 
     @Override
     public void saveClientDataToNBT(CompoundTag tag) {
-        var data = getData(Registration.SIGNDATA);
-        var settings = getData(Registration.SIGNSETTINGS);
-        NbtOps.INSTANCE.withEncoder(SignData.CODEC).apply(data).result().ifPresent(nbt -> tag.put("data", nbt));
-        NbtOps.INSTANCE.withEncoder(SignSettings.CODEC).apply(settings).result().ifPresent(nbt -> tag.put("settings", nbt));
+        NbtOps.INSTANCE.withEncoder(SignData.CODEC).apply(getData(Registration.SIGNDATA)).result().ifPresent(nbt -> tag.put("data", nbt));
+        NbtOps.INSTANCE.withEncoder(SignSettings.CODEC).apply(getData(Registration.SIGNSETTINGS)).result().ifPresent(nbt -> tag.put("settings", nbt));
     }
 
     @Override
