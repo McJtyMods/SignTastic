@@ -5,6 +5,7 @@ import com.mcjty.signtastic.modules.signs.data.SignSettings;
 import com.mcjty.signtastic.modules.signs.SignsModule;
 import com.mcjty.signtastic.modules.signs.TextureType;
 import com.mcjty.signtastic.setup.Registration;
+import com.mojang.datafixers.util.Pair;
 import mcjty.lib.api.container.DefaultContainerProvider;
 import mcjty.lib.container.GenericContainer;
 import mcjty.lib.tileentity.Cap;
@@ -12,10 +13,7 @@ import mcjty.lib.tileentity.CapType;
 import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponentMap;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.*;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -44,9 +42,8 @@ public abstract class AbstractSignTileEntity extends GenericTileEntity {
     }
 
     public void setLines(List<String> lines) {
-        SignData data = getData(Registration.SIGNDATA);
-        data.lines().clear();
-        data.lines().addAll(lines);
+        SignData data = new SignData(lines);
+        setData(Registration.SIGNDATA, data);
         markDirtyClient();
     }
 
@@ -62,6 +59,22 @@ public abstract class AbstractSignTileEntity extends GenericTileEntity {
     public abstract int getLinesSupported();
 
     public abstract float getRenderOffset();
+
+    @Override
+    public void loadClientDataFromNBT(CompoundTag tag) {
+        SignData data = NbtOps.INSTANCE.withDecoder(SignData.CODEC).apply(tag.get("data")).result().map(Pair::getFirst).orElse(SignData.EMPTY);
+        setData(Registration.SIGNDATA, data);
+        SignSettings settings = NbtOps.INSTANCE.withDecoder(SignSettings.CODEC).apply(tag.get("settings")).result().map(Pair::getFirst).orElse(SignSettings.EMPTY);
+        setData(Registration.SIGNSETTINGS, settings);
+    }
+
+    @Override
+    public void saveClientDataToNBT(CompoundTag tag) {
+        var data = getData(Registration.SIGNDATA);
+        var settings = getData(Registration.SIGNSETTINGS);
+        NbtOps.INSTANCE.withEncoder(SignData.CODEC).apply(data).result().ifPresent(nbt -> tag.put("data", nbt));
+        NbtOps.INSTANCE.withEncoder(SignSettings.CODEC).apply(settings).result().ifPresent(nbt -> tag.put("settings", nbt));
+    }
 
     @Override
     protected void applyImplicitComponents(DataComponentInput input) {
@@ -83,17 +96,17 @@ public abstract class AbstractSignTileEntity extends GenericTileEntity {
         builder.set(Registration.ITEM_SIGNSETTINGS, settings);
     }
 
-    @Override
-    protected void loadInfo(CompoundTag tagCompound) {
-        super.loadInfo(tagCompound);
-        loadClientDataFromNBT(tagCompound);
-    }
+//    @Override
+//    protected void loadInfo(CompoundTag tagCompound) {
+//        super.loadInfo(tagCompound);
+//        loadClientDataFromNBT(tagCompound);
+//    }
 
-    @Override
-    protected void saveInfo(CompoundTag tagCompound) {
-        super.saveInfo(tagCompound);
-        saveClientDataToNBT(tagCompound);
-    }
+//    @Override
+//    protected void saveInfo(CompoundTag tagCompound) {
+//        super.saveInfo(tagCompound);
+//        saveClientDataToNBT(tagCompound);
+//    }
 
     public int getSize() {
         return 1;

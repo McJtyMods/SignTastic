@@ -8,11 +8,15 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
+import java.util.Optional;
+
 public record SignSettings(boolean transparent, Integer backColor, int textColor, boolean bright, boolean large, int iconIndex, TextureType type) {
+
+    public static final SignSettings EMPTY = new SignSettings();
 
     public static final Codec<SignSettings> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.BOOL.fieldOf("transparent").forGetter(SignSettings::isTransparent),
-            Codec.INT.fieldOf("backColor").forGetter(SignSettings::getBackColor),
+            Codec.INT.optionalFieldOf("backColor").forGetter(s -> Optional.ofNullable(s.getBackColor())),
             Codec.INT.fieldOf("textColor").forGetter(SignSettings::getTextColor),
             Codec.BOOL.fieldOf("bright").forGetter(SignSettings::isBright),
             Codec.BOOL.fieldOf("large").forGetter(SignSettings::isLarge),
@@ -31,17 +35,11 @@ public record SignSettings(boolean transparent, Integer backColor, int textColor
             SignSettings::new);
 
     public SignSettings() {
-        this(false, null, 0xffffff, false, false, 0, TextureType.OAK);
+        this(false, Optional.empty(), 0xffffff, false, false, 0, TextureType.OAK);
     }
 
-    public SignSettings(boolean transparent, Integer backColor, int textColor, boolean bright, boolean large, int iconIndex, TextureType type) {
-        this.transparent = transparent;
-        this.backColor = backColor;
-        this.textColor = textColor;
-        this.bright = bright;
-        this.large = large;
-        this.iconIndex = iconIndex;
-        this.type = type;
+    public SignSettings(boolean transparent, Optional<Integer> backColor, int textColor, boolean bright, boolean large, int iconIndex, TextureType type) {
+        this(transparent, backColor.orElse(null), textColor, bright, large, iconIndex, type);
     }
 
     public boolean isTransparent() {

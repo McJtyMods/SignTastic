@@ -11,6 +11,8 @@ import java.util.List;
 
 public record SignData(List<String> lines) {
 
+    public static final SignData EMPTY = new SignData(new ArrayList<>());
+
     public static final Codec<SignData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.list(Codec.STRING).fieldOf("lines").forGetter(SignData::lines)
     ).apply(instance, SignData::new));
