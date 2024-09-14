@@ -4,6 +4,7 @@ import com.mcjty.signtastic.modules.signs.blocks.*;
 import com.mcjty.signtastic.modules.signs.client.SignGui;
 import com.mcjty.signtastic.modules.signs.client.SignRenderer;
 import com.mcjty.signtastic.modules.signs.items.SignConfiguratorItem;
+import com.mcjty.signtastic.setup.Registration;
 import mcjty.lib.blocks.RBlock;
 import mcjty.lib.container.GenericContainer;
 import mcjty.lib.datagen.DataGen;
@@ -79,7 +80,7 @@ public class SignsModule implements IModule {
         dataGen.add(
                 Dob.blockBuilder(SQUARE_SIGN)
                         .parentedItem("block/square_sign")
-                        .standardLoot(SQUARE_SIGN.be())
+                        .standardLoot(Registration.ITEM_SIGNDATA.get(), Registration.ITEM_SIGNSETTINGS.get())
                         .blockState(p -> p.orientedBlock(SQUARE_SIGN, DataGenHelper.screenModel(p, "square_sign", p.modLoc("block/screenframe_icon"), 13)))
                         .shaped(builder -> builder
                                         .define('S', ItemTags.SIGNS)
@@ -87,7 +88,7 @@ public class SignsModule implements IModule {
                                 "ppp", "pSp", "ppp"),
                 Dob.blockBuilder(BLOCK_SIGN)
                         .parentedItem("block/block_sign")
-                        .standardLoot(BLOCK_SIGN.be())
+                        .standardLoot(Registration.ITEM_SIGNDATA.get(), Registration.ITEM_SIGNSETTINGS.get())
                         .blockState(p -> p.orientedBlock(BLOCK_SIGN, DataGenHelper.screenModel(p, "block_sign", p.modLoc("block/screenframe_icon"), 0)))
                         .shaped(builder -> builder
                                         .define('S', ItemTags.SIGNS)
@@ -96,7 +97,7 @@ public class SignsModule implements IModule {
                                 "pPp", "PSP", "pPp"),
                 Dob.blockBuilder(SLAB_SIGN)
                         .parentedItem("block/slab_sign")
-                        .standardLoot(SLAB_SIGN.be())
+                        .standardLoot(Registration.ITEM_SIGNDATA.get(), Registration.ITEM_SIGNSETTINGS.get())
                         .blockState(p -> p.orientedBlock(SLAB_SIGN, DataGenHelper.screenModel(p, "slab_sign", p.modLoc("block/screenframe_icon"), 8)))
                         .shaped(builder -> builder
                                         .define('S', ItemTags.SIGNS)

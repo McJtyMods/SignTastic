@@ -15,7 +15,9 @@
               "function": "minecraft:copy_components",
               "include": [
                 "mcjtylib:item_energy",
-                "minecraft:container"
+                "minecraft:container",
+                "signtastic:signdata",
+                "signtastic:signsettings"
               ],
               "source": "block_entity"
             }
