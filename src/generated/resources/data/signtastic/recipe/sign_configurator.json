@@ -1,11 +1,12 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "misc",
   "key": {
     "S": {
       "item": "signtastic:square_sign"
     },
     "i": {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     }
   },
   "pattern": [
@@ -14,6 +15,7 @@
     "  i"
   ],
   "result": {
-    "item": "signtastic:sign_configurator"
+    "count": 1,
+    "id": "signtastic:sign_configurator"
   }
 }

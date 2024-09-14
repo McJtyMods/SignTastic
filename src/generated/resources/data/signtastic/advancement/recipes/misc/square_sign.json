@@ -11,9 +11,7 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "minecraft:paper"
-            ]
+            "items": "minecraft:paper"
           }
         ]
       },
@@ -22,8 +20,8 @@
   },
   "requirements": [
     [
-      "paper",
-      "has_the_recipe"
+      "has_the_recipe",
+      "paper"
     ]
   ],
   "rewards": {

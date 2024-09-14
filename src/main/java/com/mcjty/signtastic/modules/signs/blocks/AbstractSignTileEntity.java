@@ -70,6 +70,7 @@ public abstract class AbstractSignTileEntity extends GenericTileEntity {
 
     @Override
     protected void applyImplicitComponents(DataComponentInput input) {
+        super.applyImplicitComponents(input);
         var data = input.get(Registration.ITEM_SIGNDATA);
         if (data != null) {
             setData(Registration.SIGNDATA, data);
@@ -82,6 +83,7 @@ public abstract class AbstractSignTileEntity extends GenericTileEntity {
 
     @Override
     protected void collectImplicitComponents(DataComponentMap.Builder builder) {
+        super.collectImplicitComponents(builder);
         var data = getData(Registration.SIGNDATA);
         builder.set(Registration.ITEM_SIGNDATA, data);
         var settings = getData(Registration.SIGNSETTINGS);

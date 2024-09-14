@@ -3,17 +3,15 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipe": "signtastic:sign_configurator"
+        "recipe": "signtastic:block_sign"
       },
       "trigger": "minecraft:recipe_unlocked"
     },
-    "iron": {
+    "paper": {
       "conditions": {
         "items": [
           {
-            "items": [
-              "minecraft:iron_ingot"
-            ]
+            "items": "minecraft:paper"
           }
         ]
       },
@@ -22,13 +20,13 @@
   },
   "requirements": [
     [
-      "iron",
-      "has_the_recipe"
+      "has_the_recipe",
+      "paper"
     ]
   ],
   "rewards": {
     "recipes": [
-      "signtastic:sign_configurator"
+      "signtastic:block_sign"
     ]
   }
 }
