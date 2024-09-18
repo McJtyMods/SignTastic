@@ -71,6 +71,7 @@ public class SignTastic {
     }
 
     private void onRegisterCapabilities(RegisterCapabilitiesEvent event) {
+        // @todo 1.21 let McJtyLib handle this
         for (Map.Entry<Class<? extends GenericTileEntity>, AnnotationHolder> entry : Registration.RBLOCKS.getHolders().entrySet()) {
             AnnotationHolder holder = entry.getValue();
             for (int i = 0 ; i < holder.getCapSize() ; i++) {
