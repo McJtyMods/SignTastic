@@ -35,21 +35,21 @@ public class Registration {
     public static final DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(Registries.MENU, MODID);
     public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
     public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, MODID);
-    public static final DeferredRegister.DataComponents REGISTRAR = DeferredRegister.createDataComponents(MODID);
+    public static final DeferredRegister.DataComponents COMPONENTS = DeferredRegister.createDataComponents(MODID);
 
     public static void register(IEventBus bus) {
         RBLOCKS.register(bus);
         CONTAINERS.register(bus);
         TABS.register(bus);
         ATTACHMENT_TYPES.register(bus);
-        REGISTRAR.register(bus);
+        COMPONENTS.register(bus);
     }
 
     public static final Supplier<AttachmentType<SignSettings>> SIGNSETTINGS = ATTACHMENT_TYPES.register(
             "signsettings", () -> AttachmentType.builder(SignSettings::new)
                     .serialize(SignSettings.CODEC)
                     .build());
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<SignSettings>> ITEM_SIGNSETTINGS = REGISTRAR.registerComponentType(
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<SignSettings>> ITEM_SIGNSETTINGS = COMPONENTS.registerComponentType(
             "signsettings",
             builder -> builder
                     .persistent(SignSettings.CODEC)
@@ -59,7 +59,7 @@ public class Registration {
             "signdata", () -> AttachmentType.builder(() -> new SignData())
                     .serialize(SignData.CODEC)
                     .build());
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<SignData>> ITEM_SIGNDATA = REGISTRAR.registerComponentType(
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<SignData>> ITEM_SIGNDATA = COMPONENTS.registerComponentType(
             "signdata",
             builder -> builder
                     .persistent(SignData.CODEC)

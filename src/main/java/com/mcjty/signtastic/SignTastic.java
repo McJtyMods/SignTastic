@@ -62,7 +62,7 @@ public class SignTastic {
 
     private void onDataGen(GatherDataEvent event) {
         DataGen datagen = new DataGen(MODID, event);
-        modules.datagen(datagen);
+        modules.datagen(datagen, event.getLookupProvider());
         datagen.generate();
     }
 

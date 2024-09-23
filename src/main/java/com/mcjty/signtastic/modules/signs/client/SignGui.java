@@ -13,13 +13,10 @@ import mcjty.lib.gui.GenericGuiContainer;
 import mcjty.lib.gui.ManualEntry;
 import mcjty.lib.gui.Window;
 import mcjty.lib.gui.widgets.*;
-import mcjty.lib.varia.SafeClientTools;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 
 import java.util.Arrays;
@@ -43,8 +40,8 @@ public class SignGui extends GenericGuiContainer<AbstractSignTileEntity, Generic
     private ChoiceLabel textureTypeLabel;
     private ImageChoiceLabel imageLabel;
 
-    public SignGui(AbstractSignTileEntity tileEntity, GenericContainer container, Inventory inventory) {
-        super(tileEntity, container, inventory, ManualEntry.EMPTY);
+    public SignGui(GenericContainer container, Inventory inventory, Component title) {
+        super(container, inventory, title, ManualEntry.EMPTY);
 
         imageWidth = WIDTH;
         imageHeight = HEIGHT;
@@ -58,7 +55,7 @@ public class SignGui extends GenericGuiContainer<AbstractSignTileEntity, Generic
         for (int i = 0 ; i < labels.length ; i++) {
             labels[i] = Widgets.textfield(10, 10+18*i, WIDTH-20, 16).event(s -> update());
         }
-        SignSettings settings = tileEntity.getSettings();
+        SignSettings settings = ((AbstractSignTileEntity)getTE()).getSettings();
         backColorButton = new ToggleButton()
                 .hint(10, HEIGHT-40, 13, 16)
                 .text("")
@@ -121,6 +118,7 @@ public class SignGui extends GenericGuiContainer<AbstractSignTileEntity, Generic
     }
 
     private void updateFromTE() {
+        AbstractSignTileEntity tileEntity = getTE();
         int linesSupported = tileEntity.getLinesSupported();
         if (largeButton.isPressed()) {
             linesSupported /= 2;
@@ -142,6 +140,7 @@ public class SignGui extends GenericGuiContainer<AbstractSignTileEntity, Generic
     }
 
     private void update() {
+        AbstractSignTileEntity tileEntity = getTE();
         Messages.sendToServer(PacketUpdateSignData.create(tileEntity.getBlockPos(),
                 Arrays.stream(labels).map(TextField::getText).collect(Collectors.toList()),
                 backColorButton.isPressed() ? backColorSelector.getCurrentColor() : null,
@@ -159,9 +158,6 @@ public class SignGui extends GenericGuiContainer<AbstractSignTileEntity, Generic
     }
 
     public static void register(RegisterMenuScreensEvent event) {
-        event.<GenericContainer, SignGui>register(SignsModule.CONTAINER_SIGN.get(), (container, inventory, component) -> {
-            BlockEntity te = SafeClientTools.getClientWorld().getBlockEntity(container.getPos());
-            return new SignGui((AbstractSignTileEntity) te, container, inventory);
-        });
+        event.register(SignsModule.CONTAINER_SIGN.get(), SignGui::new);
     }
 }
