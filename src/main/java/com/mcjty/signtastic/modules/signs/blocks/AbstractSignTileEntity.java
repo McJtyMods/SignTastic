@@ -27,7 +27,7 @@ import java.util.function.Function;
 public abstract class AbstractSignTileEntity extends GenericTileEntity {
 
     @Cap(type = CapType.CONTAINER)
-    private final static Function<AbstractSignTileEntity, MenuProvider> SCREEN_HANDLER =
+    private static final Function<AbstractSignTileEntity, MenuProvider> SCREEN_HANDLER =
             be -> new DefaultContainerProvider<GenericContainer>("Sign")
                     .containerSupplier(DefaultContainerProvider.empty(SignsModule.CONTAINER_SIGN, be));
 
