@@ -55,7 +55,7 @@ public class SignGui extends GenericGuiContainer<AbstractSignTileEntity, Generic
         for (int i = 0 ; i < labels.length ; i++) {
             labels[i] = Widgets.textfield(10, 10+18*i, WIDTH-20, 16).event(s -> update());
         }
-        SignSettings settings = ((AbstractSignTileEntity)getTE()).getSettings();
+        SignSettings settings = ((AbstractSignTileEntity) getBE()).getSettings();
         backColorButton = new ToggleButton()
                 .hint(10, HEIGHT-40, 13, 16)
                 .text("")
@@ -118,7 +118,7 @@ public class SignGui extends GenericGuiContainer<AbstractSignTileEntity, Generic
     }
 
     private void updateFromTE() {
-        AbstractSignTileEntity tileEntity = getTE();
+        AbstractSignTileEntity tileEntity = getBE();
         int linesSupported = tileEntity.getLinesSupported();
         if (largeButton.isPressed()) {
             linesSupported /= 2;
@@ -140,7 +140,7 @@ public class SignGui extends GenericGuiContainer<AbstractSignTileEntity, Generic
     }
 
     private void update() {
-        AbstractSignTileEntity tileEntity = getTE();
+        AbstractSignTileEntity tileEntity = getBE();
         Messages.sendToServer(PacketUpdateSignData.create(tileEntity.getBlockPos(),
                 Arrays.stream(labels).map(TextField::getText).collect(Collectors.toList()),
                 backColorButton.isPressed() ? backColorSelector.getCurrentColor() : null,
