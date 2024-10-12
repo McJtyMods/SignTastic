@@ -12,15 +12,13 @@ import mcjty.lib.tileentity.Cap;
 import mcjty.lib.tileentity.CapType;
 import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.nbt.*;
 import net.minecraft.world.MenuProvider;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.common.util.Lazy;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
@@ -57,13 +55,13 @@ public abstract class AbstractSignTileEntity extends GenericTileEntity {
     public abstract float getRenderOffset();
 
     @Override
-    public void loadClientDataFromNBT(CompoundTag tag) {
+    public void loadClientDataFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
         setData(Registration.SIGNDATA, NbtOps.INSTANCE.withDecoder(SignData.CODEC).apply(tag.get("data")).result().map(Pair::getFirst).orElse(SignData.EMPTY));
         setData(Registration.SIGNSETTINGS, NbtOps.INSTANCE.withDecoder(SignSettings.CODEC).apply(tag.get("settings")).result().map(Pair::getFirst).orElse(SignSettings.EMPTY));
     }
 
     @Override
-    public void saveClientDataToNBT(CompoundTag tag) {
+    public void saveClientDataToNBT(CompoundTag tag, HolderLookup.Provider provider) {
         NbtOps.INSTANCE.withEncoder(SignData.CODEC).apply(getData(Registration.SIGNDATA)).result().ifPresent(nbt -> tag.put("data", nbt));
         NbtOps.INSTANCE.withEncoder(SignSettings.CODEC).apply(getData(Registration.SIGNSETTINGS)).result().ifPresent(nbt -> tag.put("settings", nbt));
     }
