@@ -31,8 +31,8 @@ public abstract class AbstractSignTileEntity extends GenericTileEntity {
 
     public AbstractSignTileEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
-        registerAttachment(Registration.SIGNDATA.get(), SignData.STREAM_CODEC);
-        registerAttachment(Registration.SIGNSETTINGS.get(), SignSettings.STREAM_CODEC);
+//        registerAttachment(Registration.SIGNDATA.get(), SignData.STREAM_CODEC);
+//        registerAttachment(Registration.SIGNSETTINGS.get(), SignSettings.STREAM_CODEC);
     }
 
     public void setLines(List<String> lines) {
