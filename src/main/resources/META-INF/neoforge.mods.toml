@@ -38,6 +38,6 @@ Signs signs and signs
 [[dependencies.signtastic]]
     modId="mcjtylib"
     mandatory=true
-    versionRange="[1.21-9.0.6,)"
+    versionRange="[1.21-9.0.10,)"
     ordering="AFTER"
     side="BOTH"
