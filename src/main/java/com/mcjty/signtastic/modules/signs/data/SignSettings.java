@@ -26,7 +26,7 @@ public record SignSettings(boolean transparent, Integer backColor, int textColor
 
     public static final StreamCodec<FriendlyByteBuf, SignSettings> STREAM_CODEC = NeoForgeStreamCodecs.composite(
             ByteBufCodecs.BOOL, SignSettings::isTransparent,
-            ByteBufCodecs.INT, SignSettings::getBackColor,
+            ByteBufCodecs.optional(ByteBufCodecs.INT), s -> Optional.ofNullable(s.getBackColor()),
             ByteBufCodecs.INT, SignSettings::getTextColor,
             ByteBufCodecs.BOOL, SignSettings::isBright,
             ByteBufCodecs.BOOL, SignSettings::isLarge,

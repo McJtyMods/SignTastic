@@ -1,3 +1,6 @@
+1.21-4.0.3:
+- Fixed a crash bug when breaking a sign
+
 1.21-4.0.2:
 - New McJtyLib
 
