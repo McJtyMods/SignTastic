@@ -8,6 +8,8 @@ import com.mcjty.signtastic.modules.signs.client.SignGui;
 import com.mcjty.signtastic.modules.signs.data.SignSettings;
 import com.mcjty.signtastic.modules.signs.network.PacketUpdateSignData;
 import com.mcjty.signtastic.setup.Messages;
+import mcjty.lib.gui.widgets.ImageChoiceLabel;
+import mcjty.lib.gui.widgets.Panel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -102,13 +104,42 @@ public final class ClientPortSmoke {
             }, server);
         }
         if (tick == 220) {
-            if (!(mc.gui.screen() instanceof SignGui)) throw new AssertionError("Sign editor did not open");
+            if (!(mc.gui.screen() instanceof SignGui gui)) throw new AssertionError("Sign editor did not open");
+            if (iconChoice(gui).getCurrentChoiceIndex() != 7) throw new AssertionError("Editor did not load the selected icon");
             screenshot(mc, "signtastic-editor.png");
         }
+        if (tick == 221) {
+            // Cross a sprite-sheet row using the widget's actual click handler.
+            iconChoice((SignGui) mc.gui.screen()).mouseClick(0, 0, 0);
+        }
         if (tick == 240) {
-            System.out.println("SIGNTASTIC CLIENT SMOKE PASSED: sign rendering, four item models, edit packet sync, and McJtyLib editor");
+            if (iconChoice((SignGui) mc.gui.screen()).getCurrentChoiceIndex() != 8) throw new AssertionError("Icon did not advance");
+            screenshot(mc, "signtastic-editor-next-icon.png");
+            pending = CompletableFuture.runAsync(() -> {
+                var sign = (AbstractSignTileEntity) server.overworld().getBlockEntity(EDITED);
+                if (sign.getSettings().getIconIndex() != 8) throw new AssertionError("Icon choice did not reach server");
+            }, server);
+        }
+        if (tick == 241) {
+            iconChoice((SignGui) mc.gui.screen()).mouseClick(0, 0, 1);
+        }
+        if (tick == 260) {
+            if (iconChoice((SignGui) mc.gui.screen()).getCurrentChoiceIndex() != 7) throw new AssertionError("Icon did not go back");
+            pending = CompletableFuture.runAsync(() -> {
+                var sign = (AbstractSignTileEntity) server.overworld().getBlockEntity(EDITED);
+                if (sign.getSettings().getIconIndex() != 7) throw new AssertionError("Previous icon did not reach server");
+            }, server);
+        }
+        if (tick == 280) {
+            System.out.println("SIGNTASTIC CLIENT SMOKE PASSED: sign rendering, four item models, edit packet sync, McJtyLib editor, and icon cycling");
             mc.stop();
         }
+    }
+
+    private static ImageChoiceLabel iconChoice(SignGui gui) {
+        return ((Panel) gui.getWindow().getToplevel()).getChildren().stream()
+                .filter(ImageChoiceLabel.class::isInstance).map(ImageChoiceLabel.class::cast)
+                .findFirst().orElseThrow(() -> new AssertionError("Missing icon selector"));
     }
 
     private static void screenshot(Minecraft mc, String name) {
