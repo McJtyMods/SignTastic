@@ -7,6 +7,7 @@ import com.mcjty.signtastic.modules.signs.items.SignConfiguratorItem;
 import com.mcjty.signtastic.setup.Registration;
 import mcjty.lib.blocks.RBlock;
 import mcjty.lib.container.GenericContainer;
+import mcjty.lib.items.BaseBlockItem;
 import mcjty.lib.datagen.DataGen;
 import mcjty.lib.datagen.Dob;
 import mcjty.lib.modules.IModule;
@@ -31,20 +32,20 @@ public class SignsModule implements IModule {
 
     public static final RBlock<SquareSignBlock, BlockItem, SquareSignTileEntity> SQUARE_SIGN = RBLOCKS.registerBlock("square_sign",
             SquareSignTileEntity.class,
-            () -> new SquareSignBlock(SquareSignTileEntity::new),
-            block -> new BlockItem(block.get(), createStandardProperties()),
+            properties -> new SquareSignBlock(properties, SquareSignTileEntity::new),
+            (block, properties) -> new BaseBlockItem(block.get(), properties.useBlockDescriptionPrefix()),
             SquareSignTileEntity::new
     );
     public static final RBlock<BlockSignBlock, BlockItem, BlockSignTileEntity> BLOCK_SIGN = RBLOCKS.registerBlock("block_sign",
             BlockSignTileEntity.class,
-            () -> new BlockSignBlock(BlockSignTileEntity::new),
-            block -> new BlockItem(block.get(), createStandardProperties()),
+            properties -> new BlockSignBlock(properties, BlockSignTileEntity::new),
+            (block, properties) -> new BaseBlockItem(block.get(), properties.useBlockDescriptionPrefix()),
             BlockSignTileEntity::new
     );
     public static final RBlock<SlabSignBlock, BlockItem, SlabSignTileEntity> SLAB_SIGN = RBLOCKS.registerBlock("slab_sign",
             SlabSignTileEntity.class,
-            () -> new SlabSignBlock(SlabSignTileEntity::new),
-            block -> new BlockItem(block.get(), createStandardProperties()),
+            properties -> new SlabSignBlock(properties, SlabSignTileEntity::new),
+            (block, properties) -> new BaseBlockItem(block.get(), properties.useBlockDescriptionPrefix()),
             SlabSignTileEntity::new
     );
 
@@ -54,7 +55,10 @@ public class SignsModule implements IModule {
 
 
     public SignsModule(IEventBus bus, Dist dist) {
-        bus.addListener(this::registerMenuScreens);
+        if (dist.isClient()) {
+            bus.addListener(this::registerMenuScreens);
+            bus.addListener(SignRenderer::register);
+        }
     }
 
     @Override
@@ -64,7 +68,6 @@ public class SignsModule implements IModule {
 
     @Override
     public void initClient(FMLClientSetupEvent event) {
-        SignRenderer.register();
     }
 
     public void registerMenuScreens(RegisterMenuScreensEvent event) {
@@ -106,7 +109,7 @@ public class SignsModule implements IModule {
                                         .unlockedBy("paper", has(Items.PAPER)),
                                 "   ", "PSP", "pPp"),
                 Dob.itemBuilder(SIGN_CONFIGURATOR)
-                        .generatedItem("item/sign_configurator")
+                        .generatedItem("signtastic:item/sign_configurator")
                         .shaped(builder -> builder
                                         .define('S', SQUARE_SIGN.item())
                                         .unlockedBy("iron", has(Items.IRON_INGOT)),

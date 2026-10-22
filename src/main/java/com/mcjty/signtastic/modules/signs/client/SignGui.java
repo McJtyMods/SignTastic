@@ -13,9 +13,9 @@ import mcjty.lib.gui.GenericGuiContainer;
 import mcjty.lib.gui.ManualEntry;
 import mcjty.lib.gui.Window;
 import mcjty.lib.gui.widgets.*;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 
@@ -25,8 +25,8 @@ import java.util.stream.Collectors;
 
 public class SignGui extends GenericGuiContainer<AbstractSignTileEntity, GenericContainer> {
 
-    public static final ResourceLocation SIGNS_GUI = ResourceLocation.fromNamespaceAndPath(SignTastic.MODID, "textures/block/signs.png");
-    private static final ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath(SignTastic.MODID, "textures/gui/signgui.png");
+    public static final Identifier SIGNS_GUI = Identifier.fromNamespaceAndPath(SignTastic.MODID, "textures/block/signs.png");
+    private static final Identifier BACKGROUND = Identifier.fromNamespaceAndPath(SignTastic.MODID, "textures/gui/signgui.png");
     public static final int WIDTH = 215;
     public static final int HEIGHT = 200;
 
@@ -43,8 +43,7 @@ public class SignGui extends GenericGuiContainer<AbstractSignTileEntity, Generic
     public SignGui(GenericContainer container, Inventory inventory, Component title) {
         super(container, inventory, title, ManualEntry.EMPTY);
 
-        imageWidth = WIDTH;
-        imageHeight = HEIGHT;
+        setWindowDimensions(WIDTH, HEIGHT);
     }
 
     @Override
@@ -151,8 +150,8 @@ public class SignGui extends GenericGuiContainer<AbstractSignTileEntity, Generic
     }
 
     @Override
-    public void render(GuiGraphics graphics, int xSize_lo, int ySize_lo, float partialTicks) {
-        super.render(graphics, xSize_lo, ySize_lo, partialTicks);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int xSize_lo, int ySize_lo, float partialTicks) {
+        super.extractRenderState(graphics, xSize_lo, ySize_lo, partialTicks);
         backColorSelector.enabled(backColorButton.isPressed());
         drawWindow(graphics, partialTicks, xSize_lo, ySize_lo);
     }

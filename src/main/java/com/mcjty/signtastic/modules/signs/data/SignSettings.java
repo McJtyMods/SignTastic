@@ -2,11 +2,12 @@ package com.mcjty.signtastic.modules.signs.data;
 
 import com.mcjty.signtastic.modules.signs.TextureType;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
+import mcjty.lib.varia.CompositeStreamCodec;
 
 import java.util.Optional;
 
@@ -14,7 +15,7 @@ public record SignSettings(boolean transparent, Integer backColor, int textColor
 
     public static final SignSettings EMPTY = new SignSettings();
 
-    public static final Codec<SignSettings> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+    public static final MapCodec<SignSettings> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Codec.BOOL.fieldOf("transparent").forGetter(SignSettings::isTransparent),
             Codec.INT.optionalFieldOf("backColor").forGetter(s -> Optional.ofNullable(s.getBackColor())),
             Codec.INT.fieldOf("textColor").forGetter(SignSettings::getTextColor),
@@ -24,7 +25,9 @@ public record SignSettings(boolean transparent, Integer backColor, int textColor
             TextureType.CODEC.fieldOf("ttype").forGetter(SignSettings::getTextureType)
     ).apply(instance, SignSettings::new));
 
-    public static final StreamCodec<FriendlyByteBuf, SignSettings> STREAM_CODEC = NeoForgeStreamCodecs.composite(
+    public static final Codec<SignSettings> CODEC = MAP_CODEC.codec();
+
+    public static final StreamCodec<FriendlyByteBuf, SignSettings> STREAM_CODEC = CompositeStreamCodec.composite(
             ByteBufCodecs.BOOL, SignSettings::isTransparent,
             ByteBufCodecs.optional(ByteBufCodecs.INT), s -> Optional.ofNullable(s.getBackColor()),
             ByteBufCodecs.INT, SignSettings::getTextColor,

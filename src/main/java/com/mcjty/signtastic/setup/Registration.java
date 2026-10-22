@@ -47,7 +47,7 @@ public class Registration {
 
     public static final Supplier<AttachmentType<SignSettings>> SIGNSETTINGS = ATTACHMENT_TYPES.register(
             "signsettings", () -> AttachmentType.builder(SignSettings::new)
-                    .serialize(SignSettings.CODEC)
+                    .serialize(SignSettings.MAP_CODEC)
                     .build());
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<SignSettings>> ITEM_SIGNSETTINGS = COMPONENTS.registerComponentType(
             "signsettings",
@@ -57,7 +57,7 @@ public class Registration {
 
     public static final Supplier<AttachmentType<SignData>> SIGNDATA = ATTACHMENT_TYPES.register(
             "signdata", () -> AttachmentType.builder(() -> new SignData())
-                    .serialize(SignData.CODEC)
+                    .serialize(SignData.MAP_CODEC)
                     .build());
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<SignData>> ITEM_SIGNDATA = COMPONENTS.registerComponentType(
             "signdata",

@@ -18,9 +18,9 @@ import static mcjty.lib.builder.TooltipBuilder.key;
 
 public class SlabSignBlock extends AbstractSignBlock {
 
-    public SlabSignBlock(BlockEntityType.BlockEntitySupplier<BlockEntity> supplier) {
+    public SlabSignBlock(Properties properties, BlockEntityType.BlockEntitySupplier<BlockEntity> supplier) {
         super(new BlockBuilder()
-                .properties(Properties.of().strength(1.0F).sound(SoundType.STONE).noOcclusion())
+                .properties(properties.strength(1.0F).sound(SoundType.STONE).noOcclusion())
 //                .topDriver(RFToolsUtilityTOPDriver.DRIVER)
                 .info(key("message.signtastic.shiftmessage"))
                 .infoShift(header())

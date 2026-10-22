@@ -3,7 +3,7 @@ package com.mcjty.signtastic.setup;
 import com.mcjty.signtastic.SignTastic;
 import com.mcjty.signtastic.modules.signs.network.PacketUpdateSignData;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.neoforged.neoforge.network.PacketDistributor;
+import mcjty.lib.network.Networking;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
@@ -18,6 +18,6 @@ public class Messages {
     }
 
     public static <T extends CustomPacketPayload> void sendToServer(T packet) {
-        PacketDistributor.sendToServer(packet);
+        Networking.sendToServer(packet);
     }
 }

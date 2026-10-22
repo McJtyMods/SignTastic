@@ -14,7 +14,7 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-    id 'net.neoforged.gradle.userdev' version '7.1.4'
+    id 'net.neoforged.gradle.userdev' version '7.1.38'
 }
 
 apply plugin: 'com.hypherionmc.modutils.modpublisher'
@@ -22,12 +22,12 @@ apply plugin: 'com.hypherionmc.modutils.modpublisher'
 if (project.file('../gradletools.gradle').exists()) {
     apply from: '../gradletools.gradle'
 } else {
-    apply from: 'https://raw.githubusercontent.com/McJtyMods/MultiWorkspace/1.21_neo/gradletools.gradle'
+    apply from: 'https://raw.githubusercontent.com/McJtyMods/MultiWorkspace/26.2_neo/gradletools.gradle'
 }
 
 group = 'com.mcjty.signtastic'
-archivesBaseName = 'signtastic'
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+base { archivesName = 'signtastic' }
+java.toolchain.languageVersion = JavaLanguageVersion.of(25)
 
 repos()
 at()
@@ -45,34 +45,22 @@ dependencies {
     mcjtylib()
 }
 
-// Example configuration to allow publishing using the maven-publish task
-// we define a custom artifact that is sourced from the reobfJar output task
-// and then declare that to be published
-// Note you'll need to add a repository here
-def reobfFile = file("$buildDir/reobfJar/output.jar")
-def reobfArtifact = artifacts.add('default', reobfFile) {
-    type 'jar'
-    builtBy 'reobfJar'
-}
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifact reobfArtifact
-        }
-    }
-    repositories {
-        maven {
-            url "file:///${project.projectDir}/mcmodsrepo"
-        }
-    }
-}
+publish()
 
 modpublisher(['the-one-probe'], ['mcjtylib'], ['the-one-probe'], ['mcjtylib'], [])
 
 
-subsystems {
-    parchment {
-        minecraftVersion = "${parchment_minecraft_version}"
-        mappingsVersion = "${parchment_version}"
+// Optional in-world checks are excluded from release jars.
+if (project.hasProperty('portTests')) {
+    sourceSets.main.java.srcDir 'src/portTest/java'
+    extensions.getByName('runs').named('gameTestServer') {
+        arguments.addAll '--test', 'signtastic:*'
+    }
+}
+if (project.hasProperty('clientSmoke')) {
+    if (!project.hasProperty('portTests')) throw new GradleException('clientSmoke requires -PportTests')
+    extensions.getByName('runs').named('client') {
+        systemProperty 'signtastic.clientSmoke', 'true'
+        arguments.addAll '--quickPlaySingleplayer', 'signtastic-port-smoke'
     }
 }

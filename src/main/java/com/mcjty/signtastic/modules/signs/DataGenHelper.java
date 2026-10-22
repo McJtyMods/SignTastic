@@ -2,16 +2,16 @@ package com.mcjty.signtastic.modules.signs;
 
 import mcjty.lib.datagen.BaseBlockStateProvider;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.client.model.generators.BlockModelBuilder;
-import net.neoforged.neoforge.client.model.generators.ModelFile;
+import net.minecraft.resources.Identifier;
+import mcjty.lib.datagen.model.BlockModelBuilder;
+import mcjty.lib.datagen.model.ModelFile;
 
-import static net.neoforged.neoforge.client.model.generators.ModelProvider.BLOCK_FOLDER;
+import static mcjty.lib.datagen.model.ModelProvider.BLOCK_FOLDER;
 
 
 public class DataGenHelper {
 
-    public static ModelFile screenModel(BaseBlockStateProvider provider, String modelName, ResourceLocation texture, int offset) {
+    public static ModelFile screenModel(BaseBlockStateProvider provider, String modelName, Identifier texture, int offset) {
         BlockModelBuilder model = provider.models().getBuilder(BLOCK_FOLDER + "/" + modelName)
                 .parent(provider.models().getExistingFile(provider.mcLoc("block")));
         model.element().from(0, 0, offset).to(16, 16, 16)
@@ -22,8 +22,8 @@ public class DataGenHelper {
                 .face(Direction.NORTH).texture("#front").end()
                 .face(Direction.SOUTH).cullface(Direction.SOUTH).texture("#side").end()
                 .end()
-                .texture("side", ResourceLocation.fromNamespaceAndPath("minecraft", "block/oak_planks"))
-                .texture("particle", ResourceLocation.fromNamespaceAndPath("minecraft", "block/oak_planks"))
+                .texture("side", Identifier.fromNamespaceAndPath("minecraft", "block/oak_planks"))
+                .texture("particle", Identifier.fromNamespaceAndPath("minecraft", "block/oak_planks"))
                 .texture("front", texture);
         return model;
     }

@@ -1,6 +1,7 @@
 package com.mcjty.signtastic.modules.signs.data;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -13,9 +14,11 @@ public record SignData(List<String> lines) {
 
     public static final SignData EMPTY = new SignData(new ArrayList<>());
 
-    public static final Codec<SignData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+    public static final MapCodec<SignData> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Codec.list(Codec.STRING).fieldOf("lines").forGetter(SignData::lines)
     ).apply(instance, SignData::new));
+
+    public static final Codec<SignData> CODEC = MAP_CODEC.codec();
 
     public static final StreamCodec<ByteBuf, SignData> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.STRING_UTF8.apply(ByteBufCodecs.list()), SignData::lines,

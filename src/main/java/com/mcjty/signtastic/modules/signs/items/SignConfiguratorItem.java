@@ -32,14 +32,16 @@ public class SignConfiguratorItem extends Item implements ITooltipSettings {
             .info(key("message.signtastic.shiftmessage"))
             .infoShift(header(), gold()));
 
-    public SignConfiguratorItem() {
-        super(SignTastic.setup.defaultProperties().stacksTo(1));
+    public SignConfiguratorItem(Properties properties) {
+        super(properties.stacksTo(1));
     }
 
     @Override
-    public void appendHoverText(ItemStack itemStack, TooltipContext context, List<Component> list, TooltipFlag flags) {
-        super.appendHoverText(itemStack, context, list, flags);
-        tooltipBuilder.get().makeTooltip(BuiltInRegistries.ITEM.getKey(this), itemStack, list, flags);
+    public void appendHoverText(ItemStack itemStack, TooltipContext context, net.minecraft.world.item.component.TooltipDisplay display, java.util.function.Consumer<Component> tooltip, TooltipFlag flags) {
+        super.appendHoverText(itemStack, context, display, tooltip, flags);
+        List<Component> lines = new java.util.ArrayList<>();
+        tooltipBuilder.get().makeTooltip(BuiltInRegistries.ITEM.getKey(this), itemStack, lines, flags);
+        lines.forEach(tooltip);
     }
 
     @Override

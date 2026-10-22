@@ -9,7 +9,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
@@ -22,7 +22,7 @@ public record PacketUpdateSignData(BlockPos pos, List<String> lines, Integer bac
                                    Boolean bright, Boolean transparent, Boolean large, Integer imageIndex,
                                    TextureType textureType) implements CustomPacketPayload {
 
-    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(SignTastic.MODID, "update_sign_data");
+    public static final Identifier ID = Identifier.fromNamespaceAndPath(SignTastic.MODID, "update_sign_data");
     public static final CustomPacketPayload.Type<PacketUpdateSignData> TYPE = new Type<>(ID);
 
     public static final StreamCodec<FriendlyByteBuf, PacketUpdateSignData> CODEC = CompositeStreamCodec.composite(

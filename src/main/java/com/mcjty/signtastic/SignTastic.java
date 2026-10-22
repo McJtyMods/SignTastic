@@ -40,7 +40,7 @@ public class SignTastic {
         }
     }
 
-    private void onDataGen(GatherDataEvent event) {
+    private void onDataGen(GatherDataEvent.Client event) {
         DataGen datagen = new DataGen(MODID, event);
         modules.datagen(datagen, event.getLookupProvider());
         datagen.generate();

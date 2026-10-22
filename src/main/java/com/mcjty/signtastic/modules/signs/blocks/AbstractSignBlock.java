@@ -7,7 +7,7 @@ import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.core.Direction;
@@ -18,11 +18,11 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.Level;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class AbstractSignBlock extends BaseBlock {
 
-    public static final DirectionProperty HORIZ_FACING = DirectionProperty.create("horizfacing", Direction.Plane.HORIZONTAL);
+    public static final EnumProperty<Direction> HORIZ_FACING = EnumProperty.create("horizfacing", Direction.class, Direction.Plane.HORIZONTAL);
 
     public AbstractSignBlock(BlockBuilder builder) {
         super(builder);
@@ -49,6 +49,6 @@ public class AbstractSignBlock extends BaseBlock {
 
     @Override
     public RenderShape getRenderShape(BlockState state) {
-        return RenderShape.ENTITYBLOCK_ANIMATED;
+        return RenderShape.INVISIBLE;
     }
 }

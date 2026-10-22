@@ -3,7 +3,7 @@ package com.mcjty.signtastic.modules.signs;
 import com.mojang.serialization.Codec;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.StringRepresentable;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
@@ -27,7 +27,7 @@ public enum TextureType implements StringRepresentable {
     IRON("minecraft", "iron_block"),
     ;
 
-    private final ResourceLocation id;
+    private final Identifier id;
 
     public static final Codec<TextureType> CODEC = StringRepresentable.fromEnum(TextureType::values);
     public static final StreamCodec<FriendlyByteBuf, TextureType> STREAM_CODEC = NeoForgeStreamCodecs.enumCodec(TextureType.class);
@@ -40,10 +40,10 @@ public enum TextureType implements StringRepresentable {
     }
 
     TextureType(String modid, String txt) {
-        this.id = ResourceLocation.fromNamespaceAndPath(modid, "block/" + txt);
+        this.id = Identifier.fromNamespaceAndPath(modid, "block/" + txt);
     }
 
-    public ResourceLocation getId() {
+    public Identifier getId() {
         return id;
     }
 
