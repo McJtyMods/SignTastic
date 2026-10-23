@@ -3,7 +3,7 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipe": "signtastic:slab_sign"
+        "recipes": "signtastic:slab_sign"
       },
       "trigger": "minecraft:recipe_unlocked"
     },

@@ -40,7 +40,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public final class PortTests {
-    private static final List<String> LINES = List.of("SignTastic 26.2", "Unicode: café", "", "Fourth line", "5", "6", "7", "8");
+    private static final List<String> LINES = List.of("SignTastic 26.3", "Unicode: café", "", "Fourth line", "5", "6", "7", "8");
     private static Identifier id(String name) { return Identifier.fromNamespaceAndPath(SignTastic.MODID, name); }
 
     @net.fabricmc.fabric.api.gametest.v1.GameTest(maxTicks = 100)

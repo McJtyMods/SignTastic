@@ -8,15 +8,23 @@ import com.mcjty.signtastic.modules.signs.data.SignSettings;
 import com.mcjty.signtastic.setup.Config;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.renderpearl.api.pipeline.BlendFunction;
+import com.mojang.renderpearl.api.pipeline.ColorTargetState;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import mcjty.lib.client.CustomRenderTypes;
 import mcjty.lib.client.RenderHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.BindGroupLayouts;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.rendertype.RenderSetup;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.oit.OitPipelineSet;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.Direction;
@@ -29,18 +37,25 @@ import org.jspecify.annotations.Nullable;
 import java.util.List;
 
 public class SignRenderer implements BlockEntityRenderer<AbstractSignTileEntity, SignRenderer.State> {
-    private static final com.mojang.blaze3d.pipeline.RenderPipeline UNLIT_ICON_PIPELINE =
-            com.mojang.blaze3d.pipeline.RenderPipeline.builder(net.minecraft.client.renderer.RenderPipelines.ENTITY_EMISSIVE_SNIPPET)
+    private static final RenderPipeline UNLIT_ICON_PIPELINE =
+            RenderPipeline.builder(RenderPipelines.ENTITY_EMISSIVE_SNIPPET)
                     .withLocation(Identifier.parse("signtastic:pipeline/unlit_icons"))
                     .withShaderDefine("NO_CARDINAL_LIGHTING")
-                    .withBindGroupLayout(net.minecraft.client.renderer.BindGroupLayouts.SAMPLER1)
-                    .withColorTargetState(new com.mojang.blaze3d.pipeline.ColorTargetState(com.mojang.blaze3d.pipeline.BlendFunction.TRANSLUCENT))
+                    .withBindGroupLayout(BindGroupLayouts.SAMPLER1)
+                    .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
                     .build();
+    private static final OitPipelineSet UNLIT_ICON_OIT_PIPELINES = OitPipelineSet.builder("signtastic_unlit_icons",
+            RenderPipeline.builder(RenderPipelines.OIT_ENTITY_SNIPPET))
+            .withAccumulateModifier(accumulate -> accumulate.withShaderDefine("EMISSIVE")
+                    .withShaderDefine("NO_CARDINAL_LIGHTING")
+                    .withBindGroupLayout(BindGroupLayouts.SAMPLER1))
+            .build();
     public static final Identifier SIGNS = Identifier.fromNamespaceAndPath(SignTastic.MODID, "textures/block/signs.png");
 
-    private static final net.minecraft.client.renderer.rendertype.RenderType UNLIT_ICONS =
-            net.minecraft.client.renderer.rendertype.RenderType.create("signtastic_unlit_icons",
-                    net.minecraft.client.renderer.rendertype.RenderSetup.builder(UNLIT_ICON_PIPELINE)
+    private static final RenderType UNLIT_ICONS =
+            RenderType.create("signtastic_unlit_icons",
+                    RenderSetup.builder(UNLIT_ICON_PIPELINE)
+                            .setOitPipelines(UNLIT_ICON_OIT_PIPELINES)
                             .withTexture("Sampler0", SIGNS).useOverlay().sortOnUpload().createRenderSetup());
 
     public static class State extends BlockEntityRenderState {
@@ -193,7 +208,8 @@ public class SignRenderer implements BlockEntityRenderer<AbstractSignTileEntity,
     }
 
     public static void register() {
-        net.minecraft.client.renderer.RenderPipelines.register(UNLIT_ICON_PIPELINE);
+        RenderPipelines.register(UNLIT_ICON_PIPELINE);
+        RenderPipelines.register(UNLIT_ICON_OIT_PIPELINES);
         net.minecraft.client.renderer.blockentity.BlockEntityRenderers.register(SignsModule.SQUARE_SIGN.be().get(), SignRenderer::new);
         net.minecraft.client.renderer.blockentity.BlockEntityRenderers.register(SignsModule.BLOCK_SIGN.be().get(), SignRenderer::new);
         net.minecraft.client.renderer.blockentity.BlockEntityRenderers.register(SignsModule.SLAB_SIGN.be().get(), SignRenderer::new);
