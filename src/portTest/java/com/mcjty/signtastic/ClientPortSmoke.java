@@ -8,9 +8,17 @@ import com.mcjty.signtastic.modules.signs.client.SignGui;
 import com.mcjty.signtastic.modules.signs.data.SignSettings;
 import com.mcjty.signtastic.modules.signs.network.PacketUpdateSignData;
 import com.mcjty.signtastic.setup.Messages;
+import com.mojang.blaze3d.platform.InputConstants;
 import mcjty.lib.gui.widgets.ImageChoiceLabel;
+import mcjty.lib.gui.widgets.ChoiceLabel;
+import mcjty.lib.gui.widgets.ColorSelector;
 import mcjty.lib.gui.widgets.Panel;
+import mcjty.lib.gui.widgets.TextField;
+import mcjty.lib.gui.widgets.ToggleButton;
+import mcjty.lib.gui.widgets.Widget;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
@@ -21,6 +29,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 /** Runs only in the disposable signtastic-port-smoke world with -PclientSmoke. */
@@ -29,6 +38,8 @@ public final class ClientPortSmoke {
     private static int ticks;
     private static CompletableFuture<Void> pending = CompletableFuture.completedFuture(null);
     private static final BlockPos EDITED = new BlockPos(0, 4, 0);
+    private static final SignSettings GUI_SETTINGS = new SignSettings(true, Integer.valueOf(0x335577),
+            0xabcdef, false, true, 7, TextureType.SPRUCE);
 
     @SubscribeEvent
     public static void tick(ClientTickEvent.Post event) {
@@ -110,7 +121,8 @@ public final class ClientPortSmoke {
         }
         if (tick == 221) {
             // Cross a sprite-sheet row using the widget's actual click handler.
-            iconChoice((SignGui) mc.gui.screen()).mouseClick(0, 0, 0);
+            var gui = (SignGui) mc.gui.screen();
+            click(gui, iconChoice(gui), InputConstants.MOUSE_BUTTON_LEFT);
         }
         if (tick == 240) {
             if (iconChoice((SignGui) mc.gui.screen()).getCurrentChoiceIndex() != 8) throw new AssertionError("Icon did not advance");
@@ -121,7 +133,8 @@ public final class ClientPortSmoke {
             }, server);
         }
         if (tick == 241) {
-            iconChoice((SignGui) mc.gui.screen()).mouseClick(0, 0, 1);
+            var gui = (SignGui) mc.gui.screen();
+            click(gui, iconChoice(gui), InputConstants.MOUSE_BUTTON_RIGHT);
         }
         if (tick == 260) {
             if (iconChoice((SignGui) mc.gui.screen()).getCurrentChoiceIndex() != 7) throw new AssertionError("Icon did not go back");
@@ -130,16 +143,72 @@ public final class ClientPortSmoke {
                 if (sign.getSettings().getIconIndex() != 7) throw new AssertionError("Previous icon did not reach server");
             }, server);
         }
-        if (tick == 280) {
-            System.out.println("SIGNTASTIC CLIENT SMOKE PASSED: sign rendering, four item models, edit packet sync, McJtyLib editor, and icon cycling");
+        if (tick == 270) {
+            var gui = (SignGui) mc.gui.screen();
+            var text = widgets(gui, TextField.class).getFirst();
+            gui.getWindow().setTextFocus(text);
+            text.text("GUI edit");
+            text.charTyped('!');
+            // Several input events can arrive before the server's next block update.
+            click(gui, toggle(gui, "Large"), InputConstants.MOUSE_BUTTON_LEFT);
+            widgets(gui, ColorSelector.class).get(0).currentColor(GUI_SETTINGS.getBackColor());
+            widgets(gui, ColorSelector.class).get(1).currentColor(GUI_SETTINGS.getTextColor());
+            widgets(gui, ChoiceLabel.class).getFirst().choice("spruce");
+            click(gui, toggle(gui, "Transp"), InputConstants.MOUSE_BUTTON_LEFT);
+            click(gui, toggle(gui, "Bright"), InputConstants.MOUSE_BUTTON_LEFT);
+            var clientSign = (AbstractSignTileEntity) mc.level.getBlockEntity(EDITED);
+            if (!clientSign.getSettings().equals(GUI_SETTINGS)) throw new AssertionError("Client did not immediately apply GUI settings");
+        }
+        if (tick == 290) {
+            var clientSign = (AbstractSignTileEntity) mc.level.getBlockEntity(EDITED);
+            if (!clientSign.getLines().getFirst().equals("GUI edit!") || !clientSign.getSettings().equals(GUI_SETTINGS))
+                throw new AssertionError("GUI edit did not update the client sign: " + clientSign.getLines() + " " + clientSign.getSettings());
+            mc.player.closeContainer();
+        }
+        if (tick == 300) {
+            var playerId = mc.player.getUUID();
+            pending = CompletableFuture.runAsync(() -> {
+                var sign = (AbstractSignTileEntity) server.overworld().getBlockEntity(EDITED);
+                if (!sign.getLines().getFirst().equals("GUI edit!") || !sign.getSettings().equals(GUI_SETTINGS))
+                    throw new AssertionError("GUI edit did not persist on server");
+                sign.getBlockState().useWithoutItem(server.overworld(), server.getPlayerList().getPlayer(playerId),
+                        new net.minecraft.world.phys.BlockHitResult(net.minecraft.world.phys.Vec3.atCenterOf(EDITED), Direction.SOUTH, EDITED, false));
+            }, server);
+        }
+        if (tick == 320) {
+            if (!(mc.gui.screen() instanceof SignGui gui)) throw new AssertionError("Editor did not reopen");
+            var text = widgets(gui, TextField.class).getFirst();
+            if (!text.getText().equals("GUI edit!")) throw new AssertionError("Reopened editor lost text");
+            if (toggle(gui, "Bright").isPressed() || !toggle(gui, "Large").isPressed() || !toggle(gui, "Transp").isPressed()
+                    || !widgets(gui, ChoiceLabel.class).getFirst().getCurrentChoice().equals("spruce")
+                    || !Objects.equals(widgets(gui, ColorSelector.class).get(0).getCurrentColor(), GUI_SETTINGS.getBackColor())
+                    || widgets(gui, ColorSelector.class).get(1).getCurrentColor() != GUI_SETTINGS.getTextColor()
+                    || iconChoice(gui).getCurrentChoiceIndex() != 7)
+                throw new AssertionError("Reopened editor lost settings");
+            screenshot(mc, "signtastic-editor-reopened.png");
+            System.out.println("SIGNTASTIC CLIENT SMOKE PASSED: rendering, item models, packet sync, icon cycling, rapid GUI edits, and close/reopen persistence");
             mc.stop();
         }
     }
 
     private static ImageChoiceLabel iconChoice(SignGui gui) {
-        return ((Panel) gui.getWindow().getToplevel()).getChildren().stream()
-                .filter(ImageChoiceLabel.class::isInstance).map(ImageChoiceLabel.class::cast)
-                .findFirst().orElseThrow(() -> new AssertionError("Missing icon selector"));
+        return widgets(gui, ImageChoiceLabel.class).getFirst();
+    }
+
+    private static <T> List<T> widgets(SignGui gui, Class<T> type) {
+        return ((Panel) gui.getWindow().getToplevel()).getChildren().stream().filter(type::isInstance).map(type::cast).toList();
+    }
+
+    private static ToggleButton toggle(SignGui gui, String text) {
+        return widgets(gui, ToggleButton.class).stream().filter(b -> b.getText().equals(text)).findFirst().orElseThrow();
+    }
+
+    private static void click(SignGui gui, Widget<?> widget, int button) {
+        var bounds = widget.getBounds();
+        var mouse = new MouseButtonEvent(gui.getLeftPos() + bounds.x + 2, gui.getTopPos() + bounds.y + 2,
+                new MouseButtonInfo(button, 0));
+        gui.mouseClicked(mouse, false);
+        gui.mouseReleased(mouse);
     }
 
     private static void screenshot(Minecraft mc, String name) {

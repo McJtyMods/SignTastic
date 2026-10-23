@@ -31,7 +31,8 @@ public class SignTastic {
 
         bus.addListener(setup::init);
         bus.addListener(modules::init);
-        bus.addListener(this::onDataGen);
+        bus.addListener((GatherDataEvent.Client event) -> onDataGen(event));
+        bus.addListener((GatherDataEvent.Server event) -> onDataGen(event));
         bus.addListener(Messages::registerMessages);
         bus.addListener(setup.getBlockCapabilityRegistrar(Registration.RBLOCKS));
 
@@ -40,9 +41,9 @@ public class SignTastic {
         }
     }
 
-    private void onDataGen(GatherDataEvent.Client event) {
+    private void onDataGen(GatherDataEvent event) {
         DataGen datagen = new DataGen(MODID, event);
-        modules.datagen(datagen, event.getLookupProvider());
+        modules.datagen(datagen, event.getWorldLookupProvider());
         datagen.generate();
     }
 

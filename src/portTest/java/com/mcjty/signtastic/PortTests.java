@@ -37,10 +37,13 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.RegisterGameTestsEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
+import java.lang.reflect.Proxy;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 @EventBusSubscriber(modid = SignTastic.MODID)
@@ -49,6 +52,7 @@ public final class PortTests {
     private static final Map<String, Consumer<GameTestHelper>> TESTS = Map.of(
             "save_and_sync", PortTests::saveAndSync,
             "drops_and_configurator", PortTests::dropsAndConfigurator,
+            "live_updates", PortTests::liveUpdates,
             "packet_codecs", PortTests::packetCodecs);
 
     private static Identifier id(String name) { return Identifier.fromNamespaceAndPath(SignTastic.MODID, name); }
@@ -156,6 +160,37 @@ public final class PortTests {
             helper.assertValueEqual(placed.getSettings(), settings, "Replaced sign keeps settings");
             helper.assertTrue(world.getCapability(CapabilityContainerProvider.CONTAINER_PROVIDER_CAPABILITY, pos, null) != null,
                     "Sign editing menu capability registered");
+        }
+        helper.succeed();
+    }
+
+    private static void liveUpdates(GameTestHelper helper) {
+        var world = helper.getLevel();
+        var pos = helper.absolutePos(new BlockPos(1, 1, 1));
+        var player = helper.makeMockPlayer(GameType.SURVIVAL);
+        var context = (IPayloadContext) Proxy.newProxyInstance(IPayloadContext.class.getClassLoader(),
+                new Class<?>[]{IPayloadContext.class}, (proxy, method, args) -> switch (method.getName()) {
+                    case "player" -> player;
+                    case "enqueueWork" -> {
+                        ((Runnable) args[0]).run();
+                        yield CompletableFuture.completedFuture(null);
+                    }
+                    default -> throw new UnsupportedOperationException(method.getName());
+                });
+        for (var family : List.of(SignsModule.SQUARE_SIGN, SignsModule.BLOCK_SIGN, SignsModule.SLAB_SIGN)) {
+            var state = family.block().get().defaultBlockState();
+            world.setBlock(pos, state, Block.UPDATE_ALL);
+            var sign = (AbstractSignTileEntity) world.getBlockEntity(pos);
+            var edit = PacketUpdateSignData.create(pos, LINES, 0x123456, 0xabcdef, true, true, true, TextureType.IRON, 7);
+            edit.handle(context);
+            helper.assertValueEqual(sign.getLines(), LINES, "GUI text reaches server");
+            var expected = new SignSettings(true, Integer.valueOf(0x123456), 0xabcdef, true, true, 7, TextureType.IRON);
+            helper.assertValueEqual(sign.getSettings(), expected, "GUI settings reach server");
+            var packet = sign.getUpdatePacket();
+            var client = (AbstractSignTileEntity) family.be().get().create(pos, state);
+            client.onDataPacket(null, TagValueInput.create(ProblemReporter.DISCARDING, world.registryAccess(), packet.getTag()));
+            helper.assertValueEqual(client.getLines(), LINES, "Live packet syncs GUI text");
+            helper.assertValueEqual(client.getSettings(), expected, "Live packet syncs GUI settings");
         }
         helper.succeed();
     }

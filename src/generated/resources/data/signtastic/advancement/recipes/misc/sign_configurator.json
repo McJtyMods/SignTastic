@@ -3,7 +3,7 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipe": "signtastic:sign_configurator"
+        "recipes": "signtastic:sign_configurator"
       },
       "trigger": "minecraft:recipe_unlocked"
     },

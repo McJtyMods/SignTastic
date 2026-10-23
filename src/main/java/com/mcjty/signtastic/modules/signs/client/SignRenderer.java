@@ -95,7 +95,7 @@ public class SignRenderer implements BlockEntityRenderer<AbstractSignTileEntity,
         float u1 = u0 + 1F / state.columns;
         float v1 = v0 + 1F / state.rows;
         int light = state.settings.isBright() ? RenderHelper.MAX_BRIGHTNESS : state.lightCoords;
-        var type = state.settings.isBright() ? NeoForgeRenderTypes.getUnlitTranslucent(SIGNS) : RenderTypes.entityCutout(SIGNS);
+        var type = state.settings.isBright() ? NeoForgeRenderTypes.getEntityUnlitTranslucent(SIGNS) : RenderTypes.entityCutout(SIGNS);
         pose.pushPose();
         pose.scale(1, -1, -1);
         collector.submitCustomGeometry(pose, type, (snapshot, vertices) ->

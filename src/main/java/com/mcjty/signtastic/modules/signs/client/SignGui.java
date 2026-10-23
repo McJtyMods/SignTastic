@@ -118,10 +118,6 @@ public class SignGui extends GenericGuiContainer<AbstractSignTileEntity, Generic
 
     private void updateFromTE() {
         AbstractSignTileEntity tileEntity = getBE();
-        int linesSupported = tileEntity.getLinesSupported();
-        if (largeButton.isPressed()) {
-            linesSupported /= 2;
-        }
         List<String> lines = tileEntity.getLines();
         for (int i = 0 ; i < labels.length ; i++) {
             if (i < lines.size()) {
@@ -129,24 +125,39 @@ public class SignGui extends GenericGuiContainer<AbstractSignTileEntity, Generic
             } else {
                 labels[i].text("");
             }
+        }
+        updateLineAvailability();
+    }
+
+    private void updateLineAvailability() {
+        AbstractSignTileEntity tileEntity = getBE();
+        int linesSupported = tileEntity.getLinesSupported();
+        if (largeButton.isPressed()) {
+            linesSupported /= 2;
+        }
+        for (int i = 0; i < labels.length; i++) {
             labels[i].enabled(i < linesSupported);
         }
     }
 
     private void updateLarge() {
         update();
-        updateFromTE();
+        updateLineAvailability();
     }
 
     private void update() {
         AbstractSignTileEntity tileEntity = getBE();
-        Messages.sendToServer(PacketUpdateSignData.create(tileEntity.getBlockPos(),
-                Arrays.stream(labels).map(TextField::getText).collect(Collectors.toList()),
+        List<String> lines = Arrays.stream(labels).map(TextField::getText).collect(Collectors.toList());
+        SignSettings settings = new SignSettings(transparentButton.isPressed(),
                 backColorButton.isPressed() ? backColorSelector.getCurrentColor() : null,
-                textColorSelector.getCurrentColor(), fullBrightButton.isPressed(), transparentButton.isPressed(),
-                largeButton.isPressed(),
-                TextureType.getByName(textureTypeLabel.getCurrentChoice()),
-                imageLabel.getCurrentChoiceIndex()));
+                textColorSelector.getCurrentColor(), fullBrightButton.isPressed(), largeButton.isPressed(),
+                imageLabel.getCurrentChoiceIndex(), TextureType.getByName(textureTypeLabel.getCurrentChoice()));
+        // Keep the editor and renderer current while the server's block update is in flight.
+        tileEntity.setLines(lines);
+        tileEntity.setSettings(settings);
+        Messages.sendToServer(PacketUpdateSignData.create(tileEntity.getBlockPos(), lines,
+                settings.getBackColor(), settings.getTextColor(), settings.isBright(), settings.isTransparent(),
+                settings.isLarge(), settings.getTextureType(), settings.getIconIndex()));
     }
 
     @Override
