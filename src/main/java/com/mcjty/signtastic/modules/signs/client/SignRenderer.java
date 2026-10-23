@@ -24,14 +24,24 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.client.NeoForgeRenderTypes;
-import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
 public class SignRenderer implements BlockEntityRenderer<AbstractSignTileEntity, SignRenderer.State> {
+    private static final com.mojang.blaze3d.pipeline.RenderPipeline UNLIT_ICON_PIPELINE =
+            com.mojang.blaze3d.pipeline.RenderPipeline.builder(net.minecraft.client.renderer.RenderPipelines.ENTITY_EMISSIVE_SNIPPET)
+                    .withLocation(Identifier.parse("signtastic:pipeline/unlit_icons"))
+                    .withShaderDefine("NO_CARDINAL_LIGHTING")
+                    .withBindGroupLayout(net.minecraft.client.renderer.BindGroupLayouts.SAMPLER1)
+                    .withColorTargetState(new com.mojang.blaze3d.pipeline.ColorTargetState(com.mojang.blaze3d.pipeline.BlendFunction.TRANSLUCENT))
+                    .build();
     public static final Identifier SIGNS = Identifier.fromNamespaceAndPath(SignTastic.MODID, "textures/block/signs.png");
+
+    private static final net.minecraft.client.renderer.rendertype.RenderType UNLIT_ICONS =
+            net.minecraft.client.renderer.rendertype.RenderType.create("signtastic_unlit_icons",
+                    net.minecraft.client.renderer.rendertype.RenderSetup.builder(UNLIT_ICON_PIPELINE)
+                            .withTexture("Sampler0", SIGNS).useOverlay().sortOnUpload().createRenderSetup());
 
     public static class State extends BlockEntityRenderState {
         SignSettings settings = SignSettings.EMPTY;
@@ -91,11 +101,11 @@ public class SignRenderer implements BlockEntityRenderer<AbstractSignTileEntity,
     private static void renderIcon(State state, PoseStack pose, SubmitNodeCollector collector) {
         int index = state.settings.getIconIndex();
         float u0 = (float) (index % state.columns) / state.columns;
-        float v0 = (float) (index / state.rows) / state.rows;
+        float v0 = (float) (index / state.columns) / state.rows;
         float u1 = u0 + 1F / state.columns;
         float v1 = v0 + 1F / state.rows;
         int light = state.settings.isBright() ? RenderHelper.MAX_BRIGHTNESS : state.lightCoords;
-        var type = state.settings.isBright() ? NeoForgeRenderTypes.getUnlitTranslucent(SIGNS) : RenderTypes.entityCutout(SIGNS);
+        var type = state.settings.isBright() ? UNLIT_ICONS : RenderTypes.entityCutout(SIGNS);
         pose.pushPose();
         pose.scale(1, -1, -1);
         collector.submitCustomGeometry(pose, type, (snapshot, vertices) ->
@@ -182,14 +192,16 @@ public class SignRenderer implements BlockEntityRenderer<AbstractSignTileEntity,
         vertices.addVertex(pose.pose(), x, y, z).setColor(-1).setUv(u, v).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pose, 0, 0, -1);
     }
 
-    public static void register(EntityRenderersEvent.RegisterRenderers event) {
-        event.registerBlockEntityRenderer(SignsModule.SQUARE_SIGN.be().get(), SignRenderer::new);
-        event.registerBlockEntityRenderer(SignsModule.BLOCK_SIGN.be().get(), SignRenderer::new);
-        event.registerBlockEntityRenderer(SignsModule.SLAB_SIGN.be().get(), SignRenderer::new);
+    public static void register() {
+        net.minecraft.client.renderer.RenderPipelines.register(UNLIT_ICON_PIPELINE);
+        net.minecraft.client.renderer.blockentity.BlockEntityRenderers.register(SignsModule.SQUARE_SIGN.be().get(), SignRenderer::new);
+        net.minecraft.client.renderer.blockentity.BlockEntityRenderers.register(SignsModule.BLOCK_SIGN.be().get(), SignRenderer::new);
+        net.minecraft.client.renderer.blockentity.BlockEntityRenderers.register(SignsModule.SLAB_SIGN.be().get(), SignRenderer::new);
     }
 
     @Override
-    public AABB getRenderBoundingBox(AbstractSignTileEntity sign) {
-        return new AABB(sign.getBlockPos()).inflate(2);
+    public boolean shouldRenderOffScreen() {
+        // A large sign can extend outside the block's own frustum bounds.
+        return true;
     }
 }

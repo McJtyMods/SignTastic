@@ -15,23 +15,19 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 /** Runs only in the disposable signtastic-port-smoke world with -PclientSmoke. */
-@EventBusSubscriber(modid = SignTastic.MODID, value = Dist.CLIENT)
-public final class ClientPortSmoke {
+public final class ClientPortSmoke implements net.fabricmc.api.ClientModInitializer {
     private static int ticks;
     private static CompletableFuture<Void> pending = CompletableFuture.completedFuture(null);
     private static final BlockPos EDITED = new BlockPos(0, 4, 0);
 
-    @SubscribeEvent
-    public static void tick(ClientTickEvent.Post event) {
+    @Override public void onInitializeClient() { net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.END_CLIENT_TICK.register(client -> tick()); }
+
+    public static void tick() {
         if (!Boolean.getBoolean("signtastic.clientSmoke")) return;
         var mc = Minecraft.getInstance();
         var server = mc.getSingleplayerServer();

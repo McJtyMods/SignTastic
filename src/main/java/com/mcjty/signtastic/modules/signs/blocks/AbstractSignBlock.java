@@ -35,7 +35,7 @@ public class AbstractSignBlock extends BaseBlock {
     }
 
     @Override
-    public BlockState rotate(BlockState state, LevelAccessor world, BlockPos pos, Rotation rot) {
+    public BlockState rotate(BlockState state, Rotation rot) {
         // Doesn't make sense to rotate a potentially 3x3 screen,
         // and is incompatible with our special wrench actions.
         return state;

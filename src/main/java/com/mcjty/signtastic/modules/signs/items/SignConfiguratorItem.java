@@ -19,7 +19,7 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.common.util.Lazy;
+import mcjty.lib.varia.Lazy;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -44,10 +44,6 @@ public class SignConfiguratorItem extends Item implements ITooltipSettings {
         lines.forEach(tooltip);
     }
 
-    @Override
-    public boolean doesSneakBypassUse(ItemStack stack, LevelReader world, BlockPos pos, Player player) {
-        return super.doesSneakBypassUse(stack, world, pos, player);
-    }
 
     @Override
     @Nonnull
@@ -60,7 +56,7 @@ public class SignConfiguratorItem extends Item implements ITooltipSettings {
                 AbstractSignTileEntity sign = (AbstractSignTileEntity) blockEntity;
                 if (context.getPlayer().isCrouching()) {
                     // Paste
-                    SignSettings settings = context.getItemInHand().get(Registration.ITEM_SIGNSETTINGS);
+                    SignSettings settings = context.getItemInHand().get(Registration.ITEM_SIGNSETTINGS.get());
                     if (settings == null) {
                         context.getPlayer().sendSystemMessage(Component.literal("There are no copied settings!").withStyle(ChatFormatting.RED));
                     } else {
@@ -70,7 +66,7 @@ public class SignConfiguratorItem extends Item implements ITooltipSettings {
                 } else {
                     // Copy
                     SignSettings settings = sign.getSettings();
-                    context.getItemInHand().set(Registration.ITEM_SIGNSETTINGS, settings);
+                    context.getItemInHand().set(Registration.ITEM_SIGNSETTINGS.get(), settings);
                     context.getPlayer().sendSystemMessage(Component.literal("Copied settings from sign!").withStyle(ChatFormatting.GREEN));
                 }
             }

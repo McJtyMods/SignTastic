@@ -17,7 +17,6 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
-import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 
 import java.util.Arrays;
 import java.util.List;
@@ -156,7 +155,7 @@ public class SignGui extends GenericGuiContainer<AbstractSignTileEntity, Generic
         drawWindow(graphics, partialTicks, xSize_lo, ySize_lo);
     }
 
-    public static void register(RegisterMenuScreensEvent event) {
-        event.register(SignsModule.CONTAINER_SIGN.get(), SignGui::new);
+    public static void register() {
+        net.minecraft.client.gui.screens.MenuScreens.register(SignsModule.CONTAINER_SIGN.get(), SignGui::new);
     }
 }

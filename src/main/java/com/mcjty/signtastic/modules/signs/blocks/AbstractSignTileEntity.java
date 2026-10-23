@@ -70,11 +70,11 @@ public abstract class AbstractSignTileEntity extends GenericTileEntity {
     @Override
     protected void applyImplicitComponents(net.minecraft.core.component.DataComponentGetter input) {
         super.applyImplicitComponents(input);
-        var data = input.get(ITEM_SIGNDATA);
+        var data = input.get(ITEM_SIGNDATA.get());
         if (data != null) {
             setData(SIGNDATA, data);
         }
-        var settings = input.get(ITEM_SIGNSETTINGS);
+        var settings = input.get(ITEM_SIGNSETTINGS.get());
         if (settings != null) {
             setData(SIGNSETTINGS, settings);
         }
@@ -84,9 +84,9 @@ public abstract class AbstractSignTileEntity extends GenericTileEntity {
     protected void collectImplicitComponents(DataComponentMap.Builder builder) {
         super.collectImplicitComponents(builder);
         var data = getData(SIGNDATA);
-        builder.set(ITEM_SIGNDATA, data);
+        builder.set(ITEM_SIGNDATA.get(), data);
         var settings = getData(SIGNSETTINGS);
-        builder.set(ITEM_SIGNSETTINGS, settings);
+        builder.set(ITEM_SIGNSETTINGS.get(), settings);
     }
 
 //    @Override

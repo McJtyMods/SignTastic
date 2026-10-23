@@ -1,7 +1,8 @@
 package com.mcjty.signtastic.setup;
 
 
-import net.neoforged.fml.ModContainer;
+import fuzs.forgeconfigapiport.fabric.api.v5.ConfigRegistry;
+import com.mcjty.signtastic.SignTastic;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.ModConfigSpec.Builder;
@@ -17,7 +18,7 @@ public class Config {
     public static ModConfigSpec.IntValue HORIZONTAL_ICONS;
     public static ModConfigSpec.IntValue VERTICAL_ICONS;
 
-    public static void register(ModContainer container) {
+    public static void register() {
         CLIENT_BUILDER.comment("General settings").push("general");
 
         ICONS = CLIENT_BUILDER
@@ -35,6 +36,6 @@ public class Config {
 
         CLIENT_CONFIG = CLIENT_BUILDER.build();
 
-        container.registerConfig(ModConfig.Type.CLIENT, CLIENT_CONFIG);
+        ConfigRegistry.INSTANCE.register(SignTastic.MODID, ModConfig.Type.CLIENT, CLIENT_CONFIG);
     }
 }

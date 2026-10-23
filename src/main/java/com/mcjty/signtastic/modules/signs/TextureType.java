@@ -5,7 +5,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.StringRepresentable;
-import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
+import net.minecraft.network.codec.ByteBufCodecs;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,7 +30,7 @@ public enum TextureType implements StringRepresentable {
     private final Identifier id;
 
     public static final Codec<TextureType> CODEC = StringRepresentable.fromEnum(TextureType::values);
-    public static final StreamCodec<FriendlyByteBuf, TextureType> STREAM_CODEC = NeoForgeStreamCodecs.enumCodec(TextureType.class);
+    public static final StreamCodec<io.netty.buffer.ByteBuf, TextureType> STREAM_CODEC = ByteBufCodecs.idMapper(i -> TextureType.values()[Math.floorMod(i, TextureType.values().length)], TextureType::ordinal);
 
     private static final Map<String, TextureType> MAP = new HashMap<>();
     static {

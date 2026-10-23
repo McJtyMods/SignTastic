@@ -1,5 +1,5 @@
-26.2-5.0.0:
-- Port to Minecraft 26.2 and NeoForge
+26.2-5.0.0-fabric:
+- Port to Minecraft 26.2 with Fabric
 
 1.21-4.0.3:
 - Fixed a crash bug when breaking a sign

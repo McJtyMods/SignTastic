@@ -1,23 +1,13 @@
 package com.mcjty.signtastic.setup;
-
-import com.mcjty.signtastic.SignTastic;
 import com.mcjty.signtastic.modules.signs.network.PacketUpdateSignData;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import mcjty.lib.network.Networking;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
-import net.neoforged.neoforge.network.registration.PayloadRegistrar;
-
-public class Messages {
-
-    public static void registerMessages(RegisterPayloadHandlersEvent event) {
-        final PayloadRegistrar registrar = event.registrar(SignTastic.MODID)
-                .versioned("1.0")
-                .optional();
-
-        registrar.playToServer(PacketUpdateSignData.TYPE, PacketUpdateSignData.CODEC, PacketUpdateSignData::handle);
+public final class Messages {
+    public static void registerMessages() {
+        PayloadTypeRegistry.serverboundPlay().register(PacketUpdateSignData.TYPE, PacketUpdateSignData.CODEC);
+        ServerPlayNetworking.registerGlobalReceiver(PacketUpdateSignData.TYPE, (packet, context) -> packet.handle(context.player()));
     }
-
-    public static <T extends CustomPacketPayload> void sendToServer(T packet) {
-        Networking.sendToServer(packet);
-    }
+    public static <T extends CustomPacketPayload> void sendToServer(T packet) { Networking.sendToServer(packet); }
 }

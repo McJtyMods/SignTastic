@@ -18,11 +18,11 @@ import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.attachment.AttachmentType;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
+import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
+import net.minecraft.resources.Identifier;
+import mcjty.lib.setup.DeferredHolder;
+import mcjty.lib.setup.DeferredRegister;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -34,31 +34,25 @@ public class Registration {
     public static final RBlockRegistry RBLOCKS = new RBlockRegistry(MODID, supplier -> SignTastic.setup.addTabItem(supplier));
     public static final DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(Registries.MENU, MODID);
     public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
-    public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, MODID);
     public static final DeferredRegister.DataComponents COMPONENTS = DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, MODID);
 
-    public static void register(IEventBus bus) {
-        RBLOCKS.register(bus);
-        CONTAINERS.register(bus);
-        TABS.register(bus);
-        ATTACHMENT_TYPES.register(bus);
-        COMPONENTS.register(bus);
+    public static void register() {
+        RBLOCKS.register();
+        CONTAINERS.register();
+        TABS.register();
+        COMPONENTS.register();
     }
 
-    public static final Supplier<AttachmentType<SignSettings>> SIGNSETTINGS = ATTACHMENT_TYPES.register(
-            "signsettings", () -> AttachmentType.builder(SignSettings::new)
-                    .serialize(SignSettings.MAP_CODEC)
-                    .build());
+    public static final AttachmentType<SignSettings> SIGNSETTINGS = AttachmentRegistry.create(
+            Identifier.fromNamespaceAndPath(MODID, "signsettings"), builder -> builder.initializer(SignSettings::new).persistent(SignSettings.CODEC));
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<SignSettings>> ITEM_SIGNSETTINGS = COMPONENTS.registerComponentType(
             "signsettings",
             builder -> builder
                     .persistent(SignSettings.CODEC)
                     .networkSynchronized(SignSettings.STREAM_CODEC));
 
-    public static final Supplier<AttachmentType<SignData>> SIGNDATA = ATTACHMENT_TYPES.register(
-            "signdata", () -> AttachmentType.builder(() -> new SignData())
-                    .serialize(SignData.MAP_CODEC)
-                    .build());
+    public static final AttachmentType<SignData> SIGNDATA = AttachmentRegistry.create(
+            Identifier.fromNamespaceAndPath(MODID, "signdata"), builder -> builder.initializer(SignData::new).persistent(SignData.CODEC));
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<SignData>> ITEM_SIGNDATA = COMPONENTS.registerComponentType(
             "signdata",
             builder -> builder
@@ -69,10 +63,9 @@ public class Registration {
         return SignTastic.setup.defaultProperties();
     }
 
-    public static DeferredHolder<CreativeModeTab, CreativeModeTab> TAB = TABS.register("signtastic", () -> CreativeModeTab.builder()
+    public static DeferredHolder<CreativeModeTab, CreativeModeTab> TAB = TABS.register("signtastic", () -> net.fabricmc.fabric.api.creativetab.v1.FabricCreativeModeTab.builder()
             .title(Component.translatable("itemGroup." + MODID))
             .icon(() -> new ItemStack(SignsModule.SQUARE_SIGN.item().get()))
-            .withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
             .displayItems((featureFlags, output) -> {
                 SignTastic.setup.populateTab(output);
             })

@@ -12,7 +12,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraft.server.level.ServerPlayer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,9 +54,10 @@ public record PacketUpdateSignData(BlockPos pos, List<String> lines, Integer bac
         return new PacketUpdateSignData(pos, lines, backColor, textColor, bright, transparent, large, imageIndex, textureType);
     }
 
-    public void handle(IPayloadContext ctx) {
-        ctx.enqueueWork(() -> {
-            Player player = ctx.player();
+    public void handle(ServerPlayer player) {
+        if (!player.mayBuild() || !player.level().hasChunkAt(pos) || player.distanceToSqr(net.minecraft.world.phys.Vec3.atCenterOf(pos)) > 64) return;
+        if (lines.size() > 16 || lines.stream().anyMatch(line -> line.length() > 256)) return;
+        {
             BlockEntity te = player.level().getBlockEntity(pos);
             if (te instanceof AbstractSignTileEntity sign) {
                 sign.setLines(lines);
@@ -68,6 +69,6 @@ public record PacketUpdateSignData(BlockPos pos, List<String> lines, Integer bac
                 sign.setTextureType(textureType);
                 sign.setIconIndex(imageIndex);
             }
-        });
+        }
     }
 }

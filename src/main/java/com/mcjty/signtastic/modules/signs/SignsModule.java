@@ -1,8 +1,6 @@
 package com.mcjty.signtastic.modules.signs;
 
 import com.mcjty.signtastic.modules.signs.blocks.*;
-import com.mcjty.signtastic.modules.signs.client.SignGui;
-import com.mcjty.signtastic.modules.signs.client.SignRenderer;
 import com.mcjty.signtastic.modules.signs.items.SignConfiguratorItem;
 import com.mcjty.signtastic.setup.Registration;
 import mcjty.lib.blocks.RBlock;
@@ -16,12 +14,7 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Items;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
-import net.neoforged.neoforge.registries.DeferredItem;
+import mcjty.lib.setup.DeferredItem;
 
 import java.util.function.Supplier;
 
@@ -29,6 +22,8 @@ import static com.mcjty.signtastic.setup.Registration.*;
 import static mcjty.lib.datagen.DataGen.has;
 
 public class SignsModule implements IModule {
+    @Override public void init() {}
+    @Override public void initClient() {}
 
     public static final RBlock<SquareSignBlock, BlockItem, SquareSignTileEntity> SQUARE_SIGN = RBLOCKS.registerBlock("square_sign",
             SquareSignTileEntity.class,
@@ -54,33 +49,26 @@ public class SignsModule implements IModule {
     public static final DeferredItem<SignConfiguratorItem> SIGN_CONFIGURATOR = RBLOCKS.registerItem("sign_configurator", SignConfiguratorItem::new);
 
 
-    public SignsModule(IEventBus bus, Dist dist) {
-        if (dist.isClient()) {
-            bus.addListener(this::registerMenuScreens);
-            bus.addListener(SignRenderer::register);
-        }
-    }
-
     @Override
-    public void init(FMLCommonSetupEvent event) {
-
-    }
-
-    @Override
-    public void initClient(FMLClientSetupEvent event) {
-    }
-
-    public void registerMenuScreens(RegisterMenuScreensEvent event) {
-        SignGui.register(event);
-    }
-
-    @Override
-    public void initConfig(IEventBus bus) {
+    public void initConfig() {
 
     }
 
     @Override
     public void initDatagen(DataGen dataGen, HolderLookup.Provider provider) {
+        dataGen.add(Dob.builder()
+                .message("block.signtastic.square_sign", "Square sign")
+                .message("block.signtastic.block_sign", "Block sign")
+                .message("block.signtastic.slab_sign", "Slab sign")
+                .message("item.signtastic.sign_configurator", "Sign Configurator")
+                .message("itemGroup.signtastic", "SignTastic")
+                .message("message.signtastic.shiftmessage", "<Press Shift>")
+                .message("message.signtastic.square_sign.header", "A square flat sign that can be heavily configured")
+                .message("message.signtastic.block_sign.header", "A block shaped sign that can be heavily configured")
+                .message("message.signtastic.slab_sign.header", "A slab shaped sign that can be heavily configured")
+                .message("message.signtastic.sign_configurator.header", "Use this to copy a sign configuration")
+                .message("message.signtastic.sign_configurator.gold", "Right click to copy, Sneak right click to paste")
+        );
         dataGen.add(
                 Dob.blockBuilder(SQUARE_SIGN)
                         .parentedItem("block/square_sign")
@@ -111,7 +99,7 @@ public class SignsModule implements IModule {
                 Dob.itemBuilder(SIGN_CONFIGURATOR)
                         .generatedItem("signtastic:item/sign_configurator")
                         .shaped(builder -> builder
-                                        .define('S', SQUARE_SIGN.item())
+                                        .define('S', SQUARE_SIGN.item().get())
                                         .unlockedBy("iron", has(Items.IRON_INGOT)),
                                 "S  ", " i ", "  i")
         );

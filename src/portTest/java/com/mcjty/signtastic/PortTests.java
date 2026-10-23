@@ -34,39 +34,17 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.storage.TagValueInput;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.RegisterGameTestsEvent;
-import net.neoforged.neoforge.registries.RegisterEvent;
 
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-@EventBusSubscriber(modid = SignTastic.MODID)
 public final class PortTests {
     private static final List<String> LINES = List.of("SignTastic 26.2", "Unicode: café", "", "Fourth line", "5", "6", "7", "8");
-    private static final Map<String, Consumer<GameTestHelper>> TESTS = Map.of(
-            "save_and_sync", PortTests::saveAndSync,
-            "drops_and_configurator", PortTests::dropsAndConfigurator,
-            "packet_codecs", PortTests::packetCodecs);
-
     private static Identifier id(String name) { return Identifier.fromNamespaceAndPath(SignTastic.MODID, name); }
 
-    @SubscribeEvent
-    public static void functions(RegisterEvent event) {
-        TESTS.forEach((name, test) -> event.register(Registries.TEST_FUNCTION, id(name), () -> test));
-    }
-
-    @SubscribeEvent
-    public static void tests(RegisterGameTestsEvent event) {
-        var environment = event.registerEnvironment(id("port"));
-        TESTS.forEach((name, test) -> event.registerTest(id(name), new FunctionGameTestInstance(
-                ResourceKey.create(Registries.TEST_FUNCTION, id(name)),
-                new TestData<>(environment, Identifier.withDefaultNamespace("empty"), 100, 0, true))));
-    }
-
-    private static void saveAndSync(GameTestHelper helper) {
+    @net.fabricmc.fabric.api.gametest.v1.GameTest(maxTicks = 100)
+    public void saveAndSync(GameTestHelper helper) {
         var world = helper.getLevel();
         var registries = world.registryAccess();
         var pos = helper.absolutePos(new BlockPos(0, 1, 0));
@@ -94,7 +72,7 @@ public final class PortTests {
                     var legacy = new CompoundTag();
                     String blockId = net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(state.getBlock()).toString();
                     legacy.putString("id", blockId);
-                    legacy.put("neoforge:attachments", attachments);
+                    legacy.put("fabric:attachments", attachments);
                     var restored = (AbstractSignTileEntity) BlockEntity.loadStatic(pos, state, legacy, registries);
                     helper.assertTrue(restored != null, "Legacy sign loads");
                     helper.assertValueEqual(restored.getLines(), LINES, "Legacy text preserved");
@@ -106,7 +84,7 @@ public final class PortTests {
                     helper.assertValueEqual(reloaded.getLines(), LINES, "Text survives save/load");
                     helper.assertValueEqual(reloaded.getSettings(), settings, "Settings survive save/load");
                     var client = (AbstractSignTileEntity) family.be().get().create(pos, state);
-                    client.handleUpdateTag(TagValueInput.create(ProblemReporter.DISCARDING, registries, restored.getUpdateTag(registries)));
+                    client.loadWithComponents(TagValueInput.create(ProblemReporter.DISCARDING, registries, restored.getUpdateTag(registries)));
                     helper.assertValueEqual(client.getLines(), LINES, "Client receives text");
                     helper.assertValueEqual(client.getSettings(), settings, "Client receives settings");
                 }
@@ -115,7 +93,8 @@ public final class PortTests {
         helper.succeed();
     }
 
-    private static void dropsAndConfigurator(GameTestHelper helper) {
+    @net.fabricmc.fabric.api.gametest.v1.GameTest(maxTicks = 100)
+    public void dropsAndConfigurator(GameTestHelper helper) {
         var world = helper.getLevel();
         var pos = helper.absolutePos(new BlockPos(0, 1, 0));
         var otherPos = helper.absolutePos(new BlockPos(2, 1, 0));
@@ -136,7 +115,7 @@ public final class PortTests {
             player.setPose(net.minecraft.world.entity.Pose.STANDING);
             configurator.getItem().useOn(new UseOnContext(player, InteractionHand.MAIN_HAND,
                     new BlockHitResult(Vec3.atCenterOf(pos), Direction.UP, pos, false)));
-            helper.assertValueEqual(configurator.get(Registration.ITEM_SIGNSETTINGS), settings, "Configurator copies settings");
+            helper.assertValueEqual(configurator.get(Registration.ITEM_SIGNSETTINGS.get()), settings, "Configurator copies settings");
             player.setShiftKeyDown(true);
             player.setPose(net.minecraft.world.entity.Pose.CROUCHING);
             configurator.getItem().useOn(new UseOnContext(player, InteractionHand.MAIN_HAND,
@@ -146,21 +125,22 @@ public final class PortTests {
             var drops = Block.getDrops(state, world, pos, sign, null, ItemStack.EMPTY);
             helper.assertTrue(drops.size() == 1, "Sign drops one item");
             var drop = drops.getFirst();
-            helper.assertValueEqual(drop.get(Registration.ITEM_SIGNDATA), new SignData(LINES), "Drop keeps text");
-            helper.assertValueEqual(drop.get(Registration.ITEM_SIGNSETTINGS), settings, "Drop keeps settings");
+            helper.assertValueEqual(drop.get(Registration.ITEM_SIGNDATA.get()), new SignData(LINES), "Drop keeps text");
+            helper.assertValueEqual(drop.get(Registration.ITEM_SIGNSETTINGS.get()), settings, "Drop keeps settings");
             var saved = ItemStack.CODEC.encodeStart(world.registryAccess().createSerializationContext(NbtOps.INSTANCE), drop).getOrThrow();
             var loaded = ItemStack.CODEC.parse(world.registryAccess().createSerializationContext(NbtOps.INSTANCE), saved).getOrThrow();
             var placed = (AbstractSignTileEntity) family.be().get().create(otherPos, state);
             placed.applyComponentsFromItemStack(loaded);
             helper.assertValueEqual(placed.getLines(), LINES, "Replaced sign keeps text");
             helper.assertValueEqual(placed.getSettings(), settings, "Replaced sign keeps settings");
-            helper.assertTrue(world.getCapability(CapabilityContainerProvider.CONTAINER_PROVIDER_CAPABILITY, pos, null) != null,
+            helper.assertTrue(CapabilityContainerProvider.CONTAINER_PROVIDER_CAPABILITY.find(world, pos, null) != null,
                     "Sign editing menu capability registered");
         }
         helper.succeed();
     }
 
-    private static void packetCodecs(GameTestHelper helper) {
+    @net.fabricmc.fabric.api.gametest.v1.GameTest(maxTicks = 100)
+    public void packetCodecs(GameTestHelper helper) {
         var buf = new FriendlyByteBuf(Unpooled.buffer());
         try {
             for (var texture : TextureType.values()) {
